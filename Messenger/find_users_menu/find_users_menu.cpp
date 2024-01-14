@@ -52,6 +52,7 @@ void find_users_menu::text_line_changed_slot(){
 
     if(enter_login_line_edit->text().size()==0){
         users_tree_widget->clear();
+        emit print_basic_logins_signal();
         return;
     }
 
@@ -66,6 +67,7 @@ void find_users_menu::find_users_slot(){
         return;
     }
     emit find_user_signal(enter_login_line_edit->text());
+    enter_login_line_edit->clear();
 }
 
 void find_users_menu::update_user_list_tree(std::vector<QString>login_list){

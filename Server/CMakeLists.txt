@@ -31,11 +31,14 @@ set(SOURCES
         ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.cpp
 )
 
-add_executable(Server ${SOURCES} ${HEADERS})
+add_executable(Server ${SOURCES} ${HEADERS}
+    ${CMAKE_SOURCE_DIR}/resources/server_structure.qmodel
+)
 
 target_include_directories(Server
     PUBLIC ${CMAKE_SOURCE_DIR}/main_server
     PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine
+    PUBLIC ${CMAKE_SOURCE_DIR}/resources
 )
 
 target_link_libraries(Server

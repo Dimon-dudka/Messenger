@@ -41,6 +41,7 @@ private slots:
 public:
     find_users_menu(QWidget *parrent = 0);
 
+public slots:
     void update_user_list_tree(std::vector<QString>login_list);
 
 signals:
@@ -55,4 +56,5 @@ signals:
     //  Frontend fails signals
     void empty_line_edit_signal(QString);
 
+    void print_basic_logins_signal();
 };

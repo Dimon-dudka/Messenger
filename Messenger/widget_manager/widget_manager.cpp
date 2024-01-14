@@ -2,8 +2,12 @@
 
 widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
 {
+    current_date_time=QDateTime::currentDateTime();
+
     fail_type = WHAT_FAIL::NONE;
     login_status = LOGIN_STATUS::FAIL;
+
+    local_DB= new sql_engine;
 
     login_menu_widget = new login_menu;
     fails_menu_widget = new fails_menu;
@@ -73,7 +77,8 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
     connect(find_users_widget,SIGNAL(back_button_signal()),this,SLOT(set_current_messenger_main_slot()));
     connect(find_users_widget,SIGNAL(find_user_signal(QString)),this,SLOT(find_users_to_server_slot(QString)));
 
-    connect(find_users_widget,SIGNAL(empty_line_edit_signal(QString)),this,SLOT(find_users_frontend_fail_slot()));
+    connect(find_users_widget,SIGNAL(empty_line_edit_signal(QString)),
+            this,SLOT(find_users_frontend_fail_slot()));
     connect(find_users_widget,SIGNAL(empty_line_edit_signal(QString)),
             fails_menu_widget,SLOT(open_fails_menu_slot(QString)));
     connect(find_users_widget,SIGNAL(empty_line_edit_signal(QString)),
@@ -81,8 +86,16 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
 
     connect(find_users_widget,SIGNAL(choise_is_done_signal(QString))
             ,messenger_menu_widget,SLOT(change_another_user_label_slot(QString)));
-    connect(find_users_widget,SIGNAL(choise_is_done_signal(QString)),this,SLOT(set_current_messenger_main_slot()));
+    connect(find_users_widget,SIGNAL(choise_is_done_signal(QString)),
+            this,SLOT(set_current_messenger_main_slot()));
+    connect(find_users_widget,SIGNAL(choise_is_done_signal(QString)),
+            this,SLOT(proof_add_logins_hash(QString)));
 
+    connect(find_users_widget,SIGNAL(print_basic_logins_signal()),this,SLOT(print_basic_users_slot()));
+
+    //  DB connections
+    connect(local_DB,SIGNAL(logins_vector_signal(std::vector<QString>)),
+            find_users_widget,SLOT(update_user_list_tree(std::vector<QString>)));
 
     set_current_login_menu_slot();
 }
@@ -135,6 +148,7 @@ void widget_manager::set_current_messenger_main_slot(){
 }
 
 void widget_manager::set_current_find_users_menu_slot(){
+    local_DB->select_logins_already_chatted_slot(user_login);
     setCurrentWidget(find_users_widget);
 }
 
@@ -288,4 +302,41 @@ void widget_manager::find_users_to_server_slot(const QString &part_of_login){
     QByteArray jsonData = doc.toJson();
 
     user_socket->write(jsonData);
+}
+
+void widget_manager::send_message_slot(const QString &login_to,const QString &message){
+    QJsonObject message_to_server,data_object;
+
+    message_to_server["type"]="message";
+
+    data_object["login_from"]=user_login;
+    data_object["login_to"]=login_to;
+    data_object["datetime"]=current_date_time.toString();
+    data_object["message"]=message;
+
+    QJsonDocument doc(message_to_server);
+    QByteArray jsonData = doc.toJson();
+
+    user_socket->write(jsonData);
+
+}
+
+void widget_manager::update_login_frequency_hash_slot(const std::vector<QString>& logins){
+    if(!login_frequency.empty())return;
+
+    for(const auto&w:logins){
+        login_frequency[w]=0;
+    }
+}
+
+void widget_manager::proof_add_logins_hash(const QString & login_to){
+
+    if(login_frequency.find(login_to)==login_frequency.end()){
+        local_DB->insert_new_chat_login_slot(user_login,login_to);
+        login_frequency[login_to]=0;
+    }
+}
+
+void widget_manager::print_basic_users_slot(){
+    local_DB->select_logins_already_chatted_slot(user_login);
 }

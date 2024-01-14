@@ -41,9 +41,11 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.cpp
 )
 
-add_executable(Messenger ${SOURCES} ${HEADERS})
+add_executable(Messenger ${SOURCES} ${HEADERS}
+    resources/messenger_structure.qmodel)
 
 target_include_directories(Messenger
+    PUBLIC ${CMAKE_SOURCE_DIR}/resources
     PUBLIC ${CMAKE_SOURCE_DIR}/widget_manager
     PUBLIC ${CMAKE_SOURCE_DIR}/login_menu
     PUBLIC ${CMAKE_SOURCE_DIR}/registration_menu

@@ -5,10 +5,13 @@
 
 #pragma once
 
+#include <QHash>
+#include <vector>
 #include <QWidget>
 #include <QString>
 #include <QPointer>
 #include <QTcpSocket>
+#include <QDateTime>
 #include <QApplication>
 #include <QStackedWidget>
 #include <QJsonObject>
@@ -21,6 +24,7 @@
 #include "registration_menu.h"
 #include "messenger_main_menu.h"
 #include "find_users_menu.h"
+#include "sql_engine.h"
 
 enum class WHAT_FAIL{
     NONE,
@@ -62,8 +66,18 @@ private:
     QPointer <registration_menu> registration_menu_widget;
     QPointer <messenger_main_menu> messenger_menu_widget;
     QPointer <find_users_menu> find_users_widget;
+    QPointer <sql_engine> local_DB;
+
+    //  To update frequency in DB
+    QHash<QString,unsigned int>login_frequency;
+
+    QDateTime current_date_time;
     
 private slots:
+
+    void update_login_frequency_hash_slot(const std::vector<QString>& logins);
+    void proof_add_logins_hash(const QString & login_to);
+    void print_basic_users_slot();
 
     //  Socket slots
     void on_socket_connected();
@@ -77,6 +91,7 @@ private slots:
 
     void find_users_to_server_slot(const QString &part_of_login);
 
+    void send_message_slot(const QString &login_to,const QString &message);
 
     //  Frontend slots
     void choise_slot_after_problem_menu();
@@ -96,11 +111,12 @@ private slots:
 
     void find_users_backend_fail_slot();
     void find_users_frontend_fail_slot();
+
+
     
 public:
     
     widget_manager(QStackedWidget *parrent = 0);
-    
 
 };
 
