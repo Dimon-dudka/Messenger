@@ -2,8 +2,11 @@
 
 #pragma once
 
-#include <QHash>
+//  STL containers
 #include <vector>
+#include <tuple>
+
+#include <QHash>
 #include <QObject>
 #include <QString>
 #include <QPointer>
@@ -13,6 +16,8 @@
 #include <QApplication>
 #include <QJsonObject>
 #include <QJsonDocument>
+
+#include <QDateTime>
 
 #include "sql_engine.h"
 

@@ -16,6 +16,8 @@ class messenger_main_menu : public QWidget
     Q_OBJECT
 private:
 
+    QString last_data_message;
+
     QPointer <QLabel> talker_login_label;
     QPointer <QPushButton> send_button,another_user_button;
     QPointer <QLineEdit> message_line_edit;
@@ -25,7 +27,7 @@ private:
 private slots:
 
     void another_user_button_slot();
-    //void send_button_slot();
+    void send_button_slot();
 
 public:
     messenger_main_menu(QWidget *parrent = 0);
@@ -37,5 +39,6 @@ public slots:
 signals:
 
     void find_users_signal();
+    void send_message_signal(QString,QString);
 
 };

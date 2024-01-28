@@ -72,6 +72,8 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
 
     //  messenger main menu connections
     connect(messenger_menu_widget,SIGNAL(find_users_signal()),this,SLOT(set_current_find_users_menu_slot()));
+    connect(messenger_menu_widget,SIGNAL(send_message_signal(QString,QString)),
+            this,SLOT(send_message_slot(QString,QString)));
 
     //  find users menu connections
     connect(find_users_widget,SIGNAL(back_button_signal()),this,SLOT(set_current_messenger_main_slot()));
@@ -231,6 +233,11 @@ void widget_manager::on_socket_ready_read(){
             fails_menu_widget->open_fails_menu_slot(message_info["problem"].toString());
             set_current_fails_menu_slot();
         }
+    }
+    else if(json_type_message["type"]=="message"){
+
+    }else if(json_type_message["type"]=="message_list"){
+
     }
 
 }

@@ -2,9 +2,12 @@
 
 #pragma once
 
+//  STL containers
+#include <vector>
+#include <tuple>
+
 #include <QtSql>
 #include <QObject>
-#include <vector>
 #include <QString>
 #include <QPointer>
 #include <QCoreApplication>
@@ -33,6 +36,7 @@ public slots:
     void user_registration(const QString &login,const QString &password);
     void user_login(const QString &login,const QString &password);
     void find_users(const QString &login,const QString& part_of_login);
+    void become_message_story(const QString &login_first,const QString &login_second,const QString &date);
 
 signals:
     //  Registration signals
@@ -47,5 +51,8 @@ signals:
     //  become users signals
     void list_of_logins_signal(const std::vector<QString>);
     void users_not_found_signal();
+
+    //  become messeges list signals
+    void messeges_list_signal(const std::vector<std::tuple<QString,QString,QString>>);
 
 };

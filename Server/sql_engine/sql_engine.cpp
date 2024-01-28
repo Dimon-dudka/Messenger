@@ -140,3 +140,34 @@ void sql_engine::find_users(const QString &login,const QString& part_of_login){
 
     emit list_of_logins_signal(std::move(users_vector));
 }
+
+
+void sql_engine::become_message_story(const QString &login_first,const QString &login_second,const QString &date){
+    change_connection_to_messages();
+
+    QString query_text{"SELECT sender, date_time, message FROM messages "
+                       "WHERE ((sender = '"+login_first+"' AND getter = '"+login_second+"') "
+                       "OR    (sender = '"+login_second+"' AND getter = '"+login_first+"')) "
+                       "AND date_time < '"+date+"' "
+                       "ORDER BY  DESC ; "};
+
+    if(!data_base_query->exec(query_text)){
+        qDebug()<<"Fail by executing sql query!";
+
+        return;
+    }
+
+    std::vector<std::tuple<QString,QString,QString>>data_from_sql;
+
+    while(data_base_query->next()){
+        data_from_sql.push_back(std::make_tuple(data_base_query->value(0).toString(),
+                                                data_base_query->value(1).toString(),
+                                                data_base_query->value(2).toString()));
+    }
+
+    if(data_from_sql.empty()){
+        return;
+    }
+
+    emit messeges_list_signal(std::move(data_from_sql));
+}

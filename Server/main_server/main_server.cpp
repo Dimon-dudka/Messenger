@@ -58,9 +58,8 @@ void main_server::ready_read_slot(){
     QByteArray data = user_socket_data->readAll();
 
     QJsonDocument user_data {QJsonDocument::fromJson(data)};
-    QJsonObject user_json_object{user_data.object()};
-
-    QJsonObject input_data {user_json_object["data"].toObject()};
+    QJsonObject user_json_object{user_data.object()},
+        input_data {user_json_object["data"].toObject()};
 
     if(user_json_object["type"]=="registration"){
 
@@ -85,6 +84,18 @@ void main_server::ready_read_slot(){
         logins_list_answer_slot(user_socket_data,input_data["login"].toString());
 
         sql_answer=SQL_STATE::NONE;
+    }
+    else if(user_json_object["type"]=="message"){
+
+        QDateTime current = QDateTime::currentDateTime();
+        qDebug()<<current.toString("yyyy-MM-dd  HH:mm:ss");
+
+        qDebug()<<"Message ok!";
+    }
+    else if(user_json_object["type"]=="message_list"){
+
+
+
     }
 }
 
