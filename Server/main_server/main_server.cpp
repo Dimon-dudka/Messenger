@@ -7,20 +7,29 @@ main_server::main_server(QObject * parent) : QObject(parent)
 
     user_server = new QTcpServer(this);
 
-    data_base = new sql_engine;
+    logger_api = new logger;
+
+    data_base = new sql_engine(logger_api);
+
 
     if(!user_server->listen(QHostAddress::Any, 2323)){
         qDebug()<<" Server working is "<<user_server->isListening();
+        logger_api->message_handler(logger::TypeError::FATAL,"<main_server>"
+                                    ,"main_server",
+                                    "main_server constructor launching fail");
+        QCoreApplication::exit(1);
         return;
     }
 
     qDebug()<<" Server working is "<<user_server->isListening();
+    logger_api->message_handler(logger::TypeError::INFO,"<main_server>","main_server","Server is started");
 
-    next_block_size=0;
-
+    //  New socket connection
     connect(user_server,SIGNAL(newConnection()),this,SLOT(new_connection_slot()));
 
-    //  SQL Connections
+    //  SQL connections
+    connect(data_base,SIGNAL(stop_server_signal()),this,SLOT(stop_server_slot()));
+
     //  Registration connections
     connect(data_base,SIGNAL(user_already_exists_signal()),this,SLOT(registration_fail_slot()));
     connect(data_base,SIGNAL(registration_success_signal()),this,SLOT(registration_success_slot()));
@@ -42,9 +51,18 @@ main_server::main_server(QObject * parent) : QObject(parent)
             ,this,SLOT(become_message_history_slot(std::vector<std::tuple<QString,QString,QString>>)));
 }
 
+main_server::~main_server(){
+    logger_api->message_handler(logger::TypeError::INFO,"<main_server>","~main_server","server stoped");
+}
+
+void main_server::stop_server_slot(){
+    this->~main_server();
+}
+
 void main_server::new_connection_slot(){
     QPointer<QTcpSocket> new_user_socket = user_server->nextPendingConnection();
 
+    //  Socket connections
     connect(new_user_socket,SIGNAL(disconnected()),new_user_socket,SLOT(deleteLater()));
     connect(new_user_socket,SIGNAL(disconnected()),this,SLOT(socket_disconnect_slot()));
     connect(new_user_socket,SIGNAL(readyRead()),this,SLOT(ready_read_slot()));
@@ -52,6 +70,10 @@ void main_server::new_connection_slot(){
     socket_list.insert(new_user_socket);
 
     qDebug()<<"New connected user: "<<new_user_socket->peerAddress();
+    logger_api->message_handler(logger::TypeError::INFO,"<main_server>"
+                                ,"new_connection_slot"
+                                ,"new socket "+new_user_socket->peerAddress().toString());
+
 }
 
 void main_server::ready_read_slot(){
@@ -59,6 +81,9 @@ void main_server::ready_read_slot(){
 
     if(!user_socket_data){
         qDebug()<<"Fail by reading data from socket!";
+        logger_api->message_handler(logger::TypeError::ERROR,"<main_server>"
+                                    ,"ready_read_slot"
+                                    ,"error reading socket: "+socket_and_login_table[user_socket_data]);
         return;
     }
 
@@ -115,6 +140,10 @@ void main_server::ready_read_slot(){
         send_message_history_slot(user_socket_data);
 
         sql_answer=SQL_STATE::NONE;
+    }else{
+        logger_api->message_handler(logger::TypeError::WARNING,"<main_server>"
+                                    ,"ready_read_slot"
+                                    ,"another type of JSON: "+user_json_object["type"].toString());
     }
 }
 
@@ -131,7 +160,6 @@ void main_server::send_message_history_slot(QTcpSocket * user_socket){
         message_object["message"]=get<2>(w);
 
         data_array.append(message_object);
-
     }
 
     message_story.clear();
@@ -140,14 +168,21 @@ void main_server::send_message_history_slot(QTcpSocket * user_socket){
     answer_to_client["data"]=answer_data;
 
     QJsonDocument doc(answer_to_client);
-    //qDebug()<<doc.toJson();
     QByteArray json_byte_array = doc.toJson();
-    user_socket->write(json_byte_array);
+
+    if(!user_socket->write(json_byte_array)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<main_server>"
+                                    ,"send_message_history_slot","sending answer fail");
+    }
 }
 
 void main_server::become_message_history_slot(const std::vector<std::tuple<QString,QString,QString>>& data){
     if(message_story.empty()){
         message_story = std::move(data);
+    }else{
+        logger_api->message_handler(logger::TypeError::WARNING,"<main_server>"
+                                    ,"become_message_history_slot"
+                                    ,"message_story is not empty");
     }
 }
 
@@ -164,15 +199,11 @@ void main_server::send_message_slot(const QString &login_from,const QString &log
     QJsonDocument doc(message_to_client);
     QByteArray json_byte_array = doc.toJson();
 
-    login_and_socket_table[login_to]->write(json_byte_array);
-}
-
-void main_server::registration_fail_slot(){
-    sql_answer=SQL_STATE::REGISTRATION_FAIL;
-}
-
-void main_server::registration_success_slot(){
-    sql_answer=SQL_STATE::REGISTRATION_SUCCESS;
+    if(!login_and_socket_table[login_to]->write(json_byte_array)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<main_server>"
+                                    ,"send_message_slot"
+                                    ,"sending message from "+login_from+" to "+login_to+" fail");
+    }
 }
 
 void main_server::registration_answer_slot(QTcpSocket* user_socket,const QString& login){
@@ -188,6 +219,10 @@ void main_server::registration_answer_slot(QTcpSocket* user_socket,const QString
         login_and_socket_table[login]=user_socket;
         socket_and_login_table[user_socket]=login;
 
+        logger_api->message_handler(logger::TypeError::INFO,"<main_server>"
+                                    ,"registration_answer_slot"
+                                    ,"register OK: "+login);
+
         break;
     case SQL_STATE::REGISTRATION_FAIL:
         answer_data["answer"]="fail";
@@ -199,7 +234,11 @@ void main_server::registration_answer_slot(QTcpSocket* user_socket,const QString
     QJsonDocument doc(answer_to_client);
 
     QByteArray json_byte_array = doc.toJson();
-    user_socket->write(json_byte_array);
+    if(!user_socket->write(json_byte_array)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<main_server>"
+                                    ,"registration_answer_slot"
+                                    ,"sending register answer  to "+login+" fail");
+    }
 }
 
 void main_server::login_answer_slot(QTcpSocket * user_socket,const QString& login){
@@ -220,6 +259,10 @@ void main_server::login_answer_slot(QTcpSocket * user_socket,const QString& logi
         answer_data["answer"]="success";
         answer_data["problem"]="none";
 
+        logger_api->message_handler(logger::TypeError::INFO,"<main_server>"
+                                    ,"login_answer_slot"
+                                    ,"login OK: "+login);
+
         login_and_socket_table[login]=user_socket;
         socket_and_login_table[user_socket]=login;
 
@@ -230,12 +273,20 @@ void main_server::login_answer_slot(QTcpSocket * user_socket,const QString& logi
     QJsonDocument doc(answer_to_client);
 
     QByteArray json_byte_array = doc.toJson();
-    user_socket->write(json_byte_array);
+    if(!user_socket->write(json_byte_array)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<main_server>"
+                                    ,"login_answer_slot"
+                                    ,"sending login answer to "+login+" fail");
+    }
 }
 
 void main_server::become_users_list_answer_slot(const std::vector<QString>logins_list){
     if(list_of_users.empty()){
         list_of_users=std::move(logins_list);
+    }else{
+        logger_api->message_handler(logger::TypeError::WARNING,"<main_server>"
+                                    ,"become_users_list_answer_slot"
+                                    ,"list_of_users is not empty");
     }
 }
 
@@ -267,37 +318,52 @@ void main_server::logins_list_answer_slot(QTcpSocket * user_socket,const QString
     QJsonDocument doc(answer_to_client);
 
     QByteArray json_byte_array = doc.toJson();
-    user_socket->write(json_byte_array);
+    if(!user_socket->write(json_byte_array)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<main_server>"
+                                    ,"logins_list_answer_slot"
+                                    ,"sending answer to "+login+" fail");
+    }
 }
 
 void main_server::socket_disconnect_slot(){
     QPointer<QTcpSocket>disconnected_socket = qobject_cast<QTcpSocket*>(sender());
+
+    logger_api->message_handler(logger::TypeError::INFO,"<main_server>"
+                                ,"socket_disconnect_slot"
+                                ,"disconnected: "+socket_and_login_table[disconnected_socket]);
 
     login_and_socket_table.remove(socket_and_login_table[disconnected_socket]);
     socket_and_login_table.remove(disconnected_socket);
 
     socket_list.remove(disconnected_socket);
     qDebug()<<"User disconnected"<<disconnected_socket->peerAddress();
-
 }
 
-void main_server::users_not_found_slot(){
+void main_server::registration_fail_slot()noexcept{
+    sql_answer=SQL_STATE::REGISTRATION_FAIL;
+}
+
+void main_server::registration_success_slot()noexcept{
+    sql_answer=SQL_STATE::REGISTRATION_SUCCESS;
+}
+
+void main_server::users_not_found_slot()noexcept{
     sql_answer=SQL_STATE::USERS_NOT_FOUND;
 }
 
-void main_server::users_found_success_slot(){
+void main_server::users_found_success_slot()noexcept{
     sql_answer=SQL_STATE::USERS_FOUND_SUCCESS;
 }
 
-void main_server::login_success_slot(){
+void main_server::login_success_slot()noexcept{
     sql_answer=SQL_STATE::LOGIN_SUCCESS;
 
 }
 
-void main_server::login_fail_login_slot(){
+void main_server::login_fail_login_slot()noexcept{
     sql_answer = SQL_STATE::LOGIN_FAIL_LOGIN;
 }
 
-void main_server::login_fail_pass_slot(){
+void main_server::login_fail_pass_slot()noexcept{
     sql_answer=SQL_STATE::LOGIN_FAIL_PASSWORD;
 }

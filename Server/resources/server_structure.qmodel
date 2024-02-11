@@ -168,7 +168,7 @@
                           </qlist>
                          </stereotypes>
                          <name>user_info</name>
-                         <pos>x:350;y:210</pos>
+                         <pos>x:345;y:180</pos>
                          <rect>x:-20;y:-20;w:40;h:40</rect>
                          <visual-role>0</visual-role>
                         </DObject>
@@ -193,7 +193,7 @@
                           </qlist>
                          </stereotypes>
                          <name>messages_info</name>
-                         <pos>x:465;y:210</pos>
+                         <pos>x:435;y:180</pos>
                          <rect>x:-20;y:-20;w:40;h:40</rect>
                          <visual-role>0</visual-role>
                         </DObject>
@@ -374,9 +374,106 @@
                       </DBoundary>
                      </instance>
                     </item>
+                    <item>
+                     <instance type="DPackage">
+                      <DPackage>
+                       <base-DObject>
+                        <DObject>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{eae6594a-819c-48f3-a57d-823f1a2d279a}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{1b52b86d-748d-4e8b-a19c-dd2391c760c4}</object>
+                         <name>logger</name>
+                         <pos>x:230;y:170</pos>
+                         <rect>x:-35;y:-30;w:70;h:60</rect>
+                         <auto-sized>false</auto-sized>
+                         <visual-role>0</visual-role>
+                        </DObject>
+                       </base-DObject>
+                      </DPackage>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{47e18e10-92fb-4d53-a0b5-ea4dc60dbd72}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{4e3d7800-17d5-41bf-8b07-b0afa6831373}</object>
+                         <a>{dc6b1360-da75-4b85-8cf3-dd601e9c92c8}</a>
+                         <b>{eae6594a-819c-48f3-a57d-823f1a2d279a}</b>
+                        </DRelation>
+                       </base-DRelation>
+                      </DDependency>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{181a8e1e-578c-40bd-bf82-5e48f7144e86}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{7698d826-ca1f-4ba4-895b-eb2a3869ae10}</object>
+                         <a>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</a>
+                         <b>{eae6594a-819c-48f3-a57d-823f1a2d279a}</b>
+                        </DRelation>
+                       </base-DRelation>
+                      </DDependency>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DItem">
+                      <DItem>
+                       <base-DObject>
+                        <DObject>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{b7993364-a23f-4da3-ad93-50f69e9c1364}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{20dd8d67-4dbb-449b-ae75-78ff2104981d}</object>
+                         <name>log_file.log</name>
+                         <pos>x:115;y:170</pos>
+                         <rect>x:-20;y:-30;w:40;h:60</rect>
+                         <visual-role>0</visual-role>
+                        </DObject>
+                       </base-DObject>
+                       <variety>document</variety>
+                       <shape-editable>false</shape-editable>
+                      </DItem>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{3011781c-7f77-41dd-8ee8-204905ccc263}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{faeae4ba-3200-456f-a8a2-10238b0fc48e}</object>
+                         <a>{eae6594a-819c-48f3-a57d-823f1a2d279a}</a>
+                         <b>{b7993364-a23f-4da3-ad93-50f69e9c1364}</b>
+                        </DRelation>
+                       </base-DRelation>
+                      </DDependency>
+                     </instance>
+                    </item>
                    </qlist>
                   </elements>
-                  <last-modified>1705247498378</last-modified>
+                  <last-modified>1707664958984</last-modified>
                   <toolbarid>Deployment</toolbarid>
                  </MDiagram>
                 </base-MDiagram>
@@ -499,6 +596,28 @@
                         </target>
                        </handle>
                       </item>
+                      <item>
+                       <handle>
+                        <uid>{4e3d7800-17d5-41bf-8b07-b0afa6831373}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{4e3d7800-17d5-41bf-8b07-b0afa6831373}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{28a7c12b-9b11-4725-87e8-6390e3cb3929}</a>
+                             <b>{1b52b86d-748d-4e8b-a19c-dd2391c760c4}</b>
+                            </MRelation>
+                           </base-MRelation>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
                      </qlist>
                     </handles>
                    </handles>
@@ -587,6 +706,28 @@
                              </base-MElement>
                              <a>{66b9c031-7eaf-4fdd-94d2-8f1b36ecaa1d}</a>
                              <b>{6f4145d2-efba-43c2-bd23-85ebdbc9c2ad}</b>
+                            </MRelation>
+                           </base-MRelation>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
+                      <item>
+                       <handle>
+                        <uid>{7698d826-ca1f-4ba4-895b-eb2a3869ae10}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{7698d826-ca1f-4ba4-895b-eb2a3869ae10}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{66b9c031-7eaf-4fdd-94d2-8f1b36ecaa1d}</a>
+                             <b>{1b52b86d-748d-4e8b-a19c-dd2391c760c4}</b>
                             </MRelation>
                            </base-MRelation>
                           </MDependency>
@@ -1035,6 +1176,80 @@
                 </base-MObject>
                 <variety-editable>false</variety-editable>
                 <variety>node</variety>
+               </MItem>
+              </instance>
+             </target>
+            </handle>
+           </item>
+           <item>
+            <handle>
+             <uid>{1b52b86d-748d-4e8b-a19c-dd2391c760c4}</uid>
+             <target>
+              <instance type="MPackage">
+               <MPackage>
+                <base-MObject>
+                 <MObject>
+                  <base-MElement>
+                   <MElement>
+                    <uid>{1b52b86d-748d-4e8b-a19c-dd2391c760c4}</uid>
+                   </MElement>
+                  </base-MElement>
+                  <name>logger</name>
+                  <relations>
+                   <handles>
+                    <handles>
+                     <qlist>
+                      <item>
+                       <handle>
+                        <uid>{faeae4ba-3200-456f-a8a2-10238b0fc48e}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{faeae4ba-3200-456f-a8a2-10238b0fc48e}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{1b52b86d-748d-4e8b-a19c-dd2391c760c4}</a>
+                             <b>{20dd8d67-4dbb-449b-ae75-78ff2104981d}</b>
+                            </MRelation>
+                           </base-MRelation>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
+                     </qlist>
+                    </handles>
+                   </handles>
+                  </relations>
+                 </MObject>
+                </base-MObject>
+               </MPackage>
+              </instance>
+             </target>
+            </handle>
+           </item>
+           <item>
+            <handle>
+             <uid>{20dd8d67-4dbb-449b-ae75-78ff2104981d}</uid>
+             <target>
+              <instance type="MItem">
+               <MItem>
+                <base-MObject>
+                 <MObject>
+                  <base-MElement>
+                   <MElement>
+                    <uid>{20dd8d67-4dbb-449b-ae75-78ff2104981d}</uid>
+                   </MElement>
+                  </base-MElement>
+                  <name>log_file.log</name>
+                 </MObject>
+                </base-MObject>
+                <variety-editable>false</variety-editable>
+                <variety>document</variety>
                </MItem>
               </instance>
              </target>

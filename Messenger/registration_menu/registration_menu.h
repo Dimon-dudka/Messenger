@@ -1,3 +1,6 @@
+//  Widget describes frontend of registration menu
+//
+
 #pragma once
 
 #include <QFont>
@@ -21,7 +24,7 @@ private:
 
 private slots:
 
-    void back_button_slot();
+    void back_button_slot()noexcept;
     void register_button_slot();
 
 public:

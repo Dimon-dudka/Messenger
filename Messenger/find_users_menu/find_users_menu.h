@@ -1,4 +1,4 @@
-//  Widget describes menu where user can find
+//  Widget describes frontend of menu where user can find
 //  Another users to chatting
 
 #pragma once
@@ -26,13 +26,13 @@ private:
     QPointer <QVBoxLayout> widget_layout;
     QPointer <QHBoxLayout> bottom_layout, upper_layout;
 
-    QTreeWidgetItem *choise_tree_item;  //doesnt work with QPointer
+    QTreeWidgetItem *choise_tree_item;
 
     QString another_user_login;
 
 private slots:
 
-    void back_button_slot();
+    void back_button_slot()noexcept;
     void find_users_slot();
     void text_line_changed_slot();
     void user_choise_slot(QTreeWidgetItem* user,int pos);

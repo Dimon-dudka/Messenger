@@ -1,4 +1,4 @@
-//  This widget describes the login menu
+//  This widget describes frontend of the login menu
 
 #pragma once
 
@@ -24,7 +24,7 @@ private:
 
 private slots:
     void login_button_slot();
-    void registration_button_slot();
+    void registration_button_slot()noexcept;
 
 public:
     login_menu(QWidget * parrent = 0);
@@ -33,7 +33,6 @@ signals:
 
     void login_button_signal(QString ,QString , QString);
     void registration_button_signal();
-
     void login_frontend_problem_signal(QString);
 
 };

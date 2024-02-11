@@ -42,7 +42,7 @@ void messenger_main_menu::scroll_value_changed(int value){
     }
 }
 
-void messenger_main_menu::another_user_button_slot(){
+void messenger_main_menu::another_user_button_slot()noexcept{
     emit find_users_signal();
 }
 
@@ -73,9 +73,7 @@ void messenger_main_menu::send_button_slot(){
     }
 
     emit send_message_signal(talker_login_label->text(),message_line_edit->text());
-
     messages_text_browser->append("You: "+message_line_edit->text());
-
     message_line_edit->clear();
 }
 
@@ -84,7 +82,6 @@ void messenger_main_menu::push_new_message_slot(const QString &login_from,const 
     if(talker_login_label->text()!=login_from){
         return;
     }
-
     messages_text_browser->append(login_from+": "+message);
 }
 
@@ -100,10 +97,7 @@ void messenger_main_menu::print_message_story_slot(const std::vector<std::tuple<
         }else{
             messages_text_browser->insertPlainText(get<0>(w)+": "+get<2>(w)+"\n");
         }
-
-        if(get<1>(w)<last_data_message){
-            last_data_message=get<1>(w);
-        }
+        if(w==data.back())last_data_message=get<1>(w);
         scroll_position_start+=1;
     }
     scroll_position_start*=11.2;

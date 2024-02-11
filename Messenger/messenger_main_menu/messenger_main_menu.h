@@ -1,4 +1,4 @@
-//  Widget describes chating menu
+//  Widget describes frontend of chating menu
 
 #pragma once
 
@@ -27,7 +27,7 @@ private:
 
 private slots:
 
-    void another_user_button_slot();
+    void another_user_button_slot()noexcept;
     void send_button_slot();
     void scroll_value_changed(int value);
 

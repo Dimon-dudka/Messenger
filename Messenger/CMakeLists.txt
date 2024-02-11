@@ -28,6 +28,7 @@ set(HEADERS
     ${CMAKE_SOURCE_DIR}/messenger_main_menu/messenger_main_menu.h
     ${CMAKE_SOURCE_DIR}/find_users_menu/find_users_menu.h
     ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.h
+    ${CMAKE_SOURCE_DIR}/logger/logger.h
 )
 
 set(SOURCES
@@ -39,10 +40,12 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/messenger_main_menu/messenger_main_menu.cpp
     ${CMAKE_SOURCE_DIR}/find_users_menu/find_users_menu.cpp
     ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.cpp
+    ${CMAKE_SOURCE_DIR}/logger/logger.cpp
 )
 
 add_executable(Messenger ${SOURCES} ${HEADERS}
-    resources/messenger_structure.qmodel)
+    resources/messenger_structure.qmodel
+    )
 
 target_include_directories(Messenger
     PUBLIC ${CMAKE_SOURCE_DIR}/resources
@@ -53,6 +56,7 @@ target_include_directories(Messenger
     PUBLIC ${CMAKE_SOURCE_DIR}/messenger_main_menu
     PUBLIC ${CMAKE_SOURCE_DIR}/find_users_menu
     PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine
+    PUBLIC ${CMAKE_SOURCE_DIR}/logger
 )
 
 target_link_libraries(Messenger

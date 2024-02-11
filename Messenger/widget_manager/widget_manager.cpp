@@ -4,6 +4,8 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
 {
     current_date_time=QDateTime::currentDateTime();
 
+    logger_api = new logger;
+
     fail_type = WHAT_FAIL::NONE;
     login_status = LOGIN_STATUS::FAIL;
 
@@ -28,21 +30,14 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
     connect_to_host();
 
     connect(user_socket,SIGNAL(readyRead()),this,SLOT(on_socket_ready_read()));
-
     connect(user_socket,SIGNAL(connected()),this,SLOT(on_socket_connected()));
-    //connect(user_socket,SIGNAL(connected()),this,SLOT(set_current_login_menu_slot()));
     connect(user_socket,SIGNAL(connected()),this,SLOT(choise_slot_after_problem_menu()));
-
     connect(user_socket,SIGNAL(disconnected()),this,SLOT(on_socket_disconnected()));
     connect(user_socket,SIGNAL(disconnected()),this,SLOT(set_current_fails_menu_slot()));
-
     connect(user_socket,SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
             this,SLOT(on_socket_display_error(QAbstractSocket::SocketError)));
 
-
-
     //  login_menu connections
-    //connect(login_menu_widget,SIGNAL(login_button_signal(QString,QString)),user_socket,)
     connect(login_menu_widget,SIGNAL(registration_button_signal())
             ,this,SLOT(set_current_registration_menu_slot()));
     connect(login_menu_widget,SIGNAL(login_button_signal(QString,QString,QString))
@@ -56,7 +51,6 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
             this,SLOT(set_current_fails_menu_slot()));
 
     //  network_fail_menu connections
-    //connect(fails_menu_widget,SIGNAL(try_again_signal()),this,SLOT(connect_to_host()));
     connect(fails_menu_widget,SIGNAL(try_again_signal()),this,SLOT(choise_slot_after_problem_menu()));
 
     //  registration menu connections
@@ -104,7 +98,7 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
     set_current_login_menu_slot();
 }
 
-void widget_manager::choise_slot_after_problem_menu(){
+void widget_manager::choise_slot_after_problem_menu()noexcept{
     switch(fail_type){
     case WHAT_FAIL::NONE:
     case WHAT_FAIL::NETWORK_FAIL:
@@ -130,53 +124,51 @@ void widget_manager::choise_slot_after_problem_menu(){
         set_current_find_users_menu_slot();
         break;
     }
-
-
     fail_type=WHAT_FAIL::NONE;
 }
 
-void widget_manager::set_current_fails_menu_slot(){
+void widget_manager::set_current_fails_menu_slot()noexcept{
     setCurrentWidget(fails_menu_widget);
 }
 
-void widget_manager::set_current_login_menu_slot(){
+void widget_manager::set_current_login_menu_slot()noexcept{
     setCurrentWidget(login_menu_widget);
 }
 
-void widget_manager::set_current_registration_menu_slot(){
+void widget_manager::set_current_registration_menu_slot()noexcept{
     setCurrentWidget(registration_menu_widget);
 }
 
-void widget_manager::set_current_messenger_main_slot(){
+void widget_manager::set_current_messenger_main_slot()noexcept{
     setCurrentWidget(messenger_menu_widget);
 }
 
-void widget_manager::set_current_find_users_menu_slot(){
+void widget_manager::set_current_find_users_menu_slot()noexcept{
     local_DB->select_logins_already_chatted_slot(user_login);
     setCurrentWidget(find_users_widget);
 }
 
-
-void widget_manager::registration_frontend_fail_slot(){
+void widget_manager::registration_frontend_fail_slot()noexcept{
     fail_type = WHAT_FAIL::REGISTRATION_FRONTEND_FAIL;
 }
 
-void widget_manager::registration_backend_fail_slot(){
+void widget_manager::registration_backend_fail_slot()noexcept{
     fail_type = WHAT_FAIL::REGISTRATION_BACKEND_FAIL;
 }
 
-void widget_manager::login_backend_fail_slot(){
+void widget_manager::login_backend_fail_slot()noexcept{
     fail_type = WHAT_FAIL::LOGIN_BACKEND_FAIL;
 }
 
-void widget_manager::login_frontend_fail_slot(){
+void widget_manager::login_frontend_fail_slot()noexcept{
     fail_type = WHAT_FAIL::LOGIN_FRONTEND_FAIL;
 }
 
-void widget_manager::find_users_backend_fail_slot(){
+void widget_manager::find_users_backend_fail_slot()noexcept{
     fail_type = WHAT_FAIL::FIND_USERS_BACKEND_FAIL;
 }
-void widget_manager::find_users_frontend_fail_slot(){
+
+void widget_manager::find_users_frontend_fail_slot()noexcept{
     fail_type = WHAT_FAIL::FIND_USERS_FRONTEND_FAIL;
 }
 
@@ -184,7 +176,10 @@ void widget_manager::on_socket_ready_read(){
     QPointer<QTcpSocket>server_answer_socket = qobject_cast<QTcpSocket*>(sender());
 
     if(!server_answer_socket){
-        qDebug()<<"Not all data!";
+        logger_api->message_handler(logger::TypeError::ERROR,"<widget_manager>"
+                                    ,"on_socket_ready_read"
+                                    ,"reading server answer fail!");
+
         return;
     }
 
@@ -224,9 +219,7 @@ void widget_manager::on_socket_ready_read(){
             for(const auto &w:logins_json_array){
                 logins_array_from_json.push_back(w.toString());
             }
-
             find_users_widget->update_user_list_tree(logins_array_from_json);
-
         }
         else{
             find_users_backend_fail_slot();
@@ -238,15 +231,10 @@ void widget_manager::on_socket_ready_read(){
         if(message_info["login_to"].toString()!=user_login){
             return;
         }
-
         messenger_menu_widget->push_new_message_slot(message_info["login_from"].toString(),message_info["message"].toString());
-
-
     }
     else if(json_type_message["type"]=="message_list"){
-
         std::vector<std::tuple<QString,QString,QString>>server_data;
-
         QJsonArray message_array = message_info["messages"].toArray();
 
         for(const auto&w:message_array){
@@ -255,38 +243,36 @@ void widget_manager::on_socket_ready_read(){
                                   tmp["date_time"].toString()
                                  ,tmp["message"].toString()});
         }
-
         messenger_menu_widget->print_message_story_slot(std::move(server_data));
     }
-
 }
 
-void widget_manager::on_socket_connected(){
+void widget_manager::on_socket_connected()noexcept{
     fail_type = WHAT_FAIL::NONE;
 }
 
-void widget_manager::on_socket_disconnected(){
+void widget_manager::on_socket_disconnected()noexcept{
     fail_type = WHAT_FAIL::NETWORK_FAIL;
 }
 
-void widget_manager::on_socket_display_error(QAbstractSocket::SocketError socket_error){
+void widget_manager::on_socket_display_error(QAbstractSocket::SocketError socket_error)noexcept{
     fail_type = WHAT_FAIL::NETWORK_FAIL;
     fails_menu_widget->open_fails_menu_slot("Network fail!");
     set_current_fails_menu_slot();
 }
 
 bool widget_manager::connect_to_host(){
-
     if(user_socket->state()!=QAbstractSocket::ConnectedState){
-     user_socket->connectToHost("127.0.0.1",2323);
+        user_socket->connectToHost("127.0.0.1",2323);
     }
-
     if(user_socket->state()==QAbstractSocket::ConnectedState){
         fail_type=WHAT_FAIL::NONE;
+        logger_api->message_handler(logger::TypeError::INFO,"<widget_manager>"
+                                    ,"connect_to_host"
+                                    ,"connected to host");
         return 1;
     }
     return 0;
-
 }
 
 void widget_manager::register_login_to_server_slot(const QString& login,
@@ -298,7 +284,6 @@ void widget_manager::register_login_to_server_slot(const QString& login,
     }else{
         message_to_server["type"]="login";
     }
-
     data_object["login"]=login;
     data_object["password"]=password;
     message_to_server["data"]=data_object;
@@ -309,24 +294,29 @@ void widget_manager::register_login_to_server_slot(const QString& login,
     user_login=std::move(login);
     user_password=std::move(password);
 
-    user_socket->write(jsonData);
-
+    if(!user_socket->write(jsonData)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<widget_manager>"
+                                    ,"register_login_to_server_slot"
+                                    ,"response to server sending fail!");
+    }
 }
 
 void widget_manager::find_users_to_server_slot(const QString &part_of_login){
     QJsonObject message_to_server,data_object;
 
     message_to_server["type"]="users_list";
-
     data_object["login"]=user_login;
-
     data_object["login_part"]=part_of_login;
     message_to_server["data"]=data_object;
 
     QJsonDocument doc(message_to_server);
     QByteArray jsonData = doc.toJson();
 
-    user_socket->write(jsonData);
+    if(!user_socket->write(jsonData)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<widget_manager>"
+                                    ,"find_users_to_server_slot"
+                                    ,"response to server sending fail!");
+    }
 }
 
 void widget_manager::send_message_slot(const QString &login_to,const QString &message){
@@ -342,22 +332,23 @@ void widget_manager::send_message_slot(const QString &login_to,const QString &me
     QJsonDocument doc(message_to_server);
     QByteArray jsonData = doc.toJson();
 
-    user_socket->write(jsonData);
+    if(!user_socket->write(jsonData)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<widget_manager>"
+                                    ,"send_message_slot"
+                                    ,"sending message fail!");
+    }
 
     local_DB->update_frequency_slot(user_login,login_to);
-
 }
 
-void widget_manager::update_login_frequency_hash_slot(const std::vector<QString>& logins){
+void widget_manager::update_login_frequency_hash_slot(const std::vector<QString>& logins)noexcept{
     if(!login_frequency.empty())return;
-
     for(const auto&w:logins){
         login_frequency[w]=0;
     }
 }
 
 void widget_manager::proof_add_logins_hash(const QString & login_to){
-
     if(login_frequency.find(login_to)==login_frequency.end()){
         local_DB->insert_new_chat_login_slot(user_login,login_to);
         login_frequency[login_to]=0;
@@ -381,5 +372,9 @@ void widget_manager::send_message_history_request_slot(const QString &last_date,
     QJsonDocument doc(message_to_server);
     QByteArray jsonData = doc.toJson();
 
-    user_socket->write(jsonData);
+    if(!user_socket->write(jsonData)){
+        logger_api->message_handler(logger::TypeError::ERROR,"<widget_manager>"
+                                    ,"send_message_history_request_slot"
+                                    ,"sending response fail!");
+    }
 }

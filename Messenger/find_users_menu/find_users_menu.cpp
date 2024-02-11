@@ -42,7 +42,7 @@ find_users_menu::find_users_menu(QWidget * parrent):QWidget(parrent)
             this,SLOT(user_choise_slot(QTreeWidgetItem*,int)));
 }
 
-void find_users_menu::back_button_slot(){
+void find_users_menu::back_button_slot()noexcept{
     emit back_button_signal();
 }
 

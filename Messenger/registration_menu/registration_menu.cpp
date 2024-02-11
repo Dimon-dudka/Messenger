@@ -33,10 +33,9 @@ registration_menu::registration_menu(QWidget *parrent):QWidget(parrent)
     connect(register_button,SIGNAL(clicked()),this,SLOT(register_button_slot()));
 
     setLayout(widget_layout);
-
 }
 
-void registration_menu::back_button_slot(){
+void registration_menu::back_button_slot()noexcept{
     emit back_button_signal();
 }
 
@@ -47,7 +46,6 @@ void registration_menu::register_button_slot(){
         emit register_frontend_problem_signal("Login is less then 6");
         return;
     }
-
     //password
     if(password_line_edit->text().size()<6){
         emit register_frontend_problem_signal("Password is less then 6!");

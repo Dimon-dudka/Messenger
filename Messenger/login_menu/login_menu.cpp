@@ -39,18 +39,15 @@ void login_menu::login_button_slot(){
         emit login_frontend_problem_signal("Incorrect login!");
         return;
     }
-
     if(password_line_edit->text().size()<6){
         emit login_frontend_problem_signal("Password is less then 6!");
         return;
     }
-
     emit login_button_signal(login_line_edit->text(),password_line_edit->text(),"login");
 
     password_line_edit->clear();
-
 }
 
-void login_menu::registration_button_slot(){
+void login_menu::registration_button_slot()noexcept{
     emit registration_button_signal();
 }

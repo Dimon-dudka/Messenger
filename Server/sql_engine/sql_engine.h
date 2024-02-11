@@ -1,4 +1,5 @@
 //  SQL Engine provides an interface to answer on server requests
+//  insert,update and read data from databases
 
 #pragma once
 
@@ -12,6 +13,8 @@
 #include <QPointer>
 #include <QCoreApplication>
 
+#include "logger.h"
+
 class sql_engine : public QObject
 {
     Q_OBJECT
@@ -21,15 +24,16 @@ private:
     QSqlQuery* data_base_query;
     QString data_base_directory;
 
-    void open_data_bases();
+    QPointer<logger>logger_api;
 
+    void open_data_bases();
 
     //  Change connection to another table
     void change_connection_to_user_info();
     void change_connection_to_messages();
 
 public:
-    sql_engine(QObject *parrent = 0);
+    sql_engine(QObject *parrent = 0,logger* log = 0);
 
 public slots:
 
@@ -57,5 +61,7 @@ signals:
 
     //  become messeges list signals
     void messeges_list_signal(std::vector<std::tuple<QString,QString,QString>>);
+
+    void stop_server_signal();
 
 };

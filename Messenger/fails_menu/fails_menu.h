@@ -1,5 +1,5 @@
 //  This widget describes widget that shows when
-//  some network problems are
+//  some problems are. Laso shows kind of problem
 
 #pragma once
 
@@ -22,7 +22,7 @@ private:
 
 private slots:
 
-    void try_again_button_slot();
+    void try_again_button_slot() noexcept;
 
 public:
     fails_menu(QWidget *parrent = 0);

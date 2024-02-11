@@ -23,12 +23,14 @@ endif()
 set(HEADERS
         ${CMAKE_SOURCE_DIR}/main_server/main_server.h
         ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.h
+        ${CMAKE_SOURCE_DIR}/logger/logger.h
 )
 
 set(SOURCES
         main.cpp
         ${CMAKE_SOURCE_DIR}/main_server/main_server.cpp
         ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.cpp
+        ${CMAKE_SOURCE_DIR}/logger/logger.cpp
 )
 
 add_executable(Server ${SOURCES} ${HEADERS}
@@ -38,6 +40,7 @@ add_executable(Server ${SOURCES} ${HEADERS}
 target_include_directories(Server
     PUBLIC ${CMAKE_SOURCE_DIR}/main_server
     PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine
+    PUBLIC ${CMAKE_SOURCE_DIR}/logger
     PUBLIC ${CMAKE_SOURCE_DIR}/resources
 )
 

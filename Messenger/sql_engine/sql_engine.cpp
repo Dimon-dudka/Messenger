@@ -1,6 +1,6 @@
 #include "sql_engine.h"
 
-sql_engine::sql_engine(QObject * parrent):QObject(parrent)
+sql_engine::sql_engine(QObject * parrent,logger* log):QObject(parrent),logger_api(log)
 {
     sql_connection = QSqlDatabase::addDatabase("QSQLITE");
     data_base_query = new QSqlQuery;
@@ -25,7 +25,9 @@ void sql_engine::open_data_bases(){
                        ");"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Chat_logins DB open FAIL!";
+        logger_api->message_handler(logger::TypeError::ERROR,"<sql_engine>"
+                                    ,"open_data_bases"
+                                    ,"creating/open database fail: "+data_base_query->lastError().text());
         return;
     }
     data_base_query->clear();
@@ -36,7 +38,9 @@ void sql_engine::open_and_proof_DB_connection(){
     data_base_query->clear();
 
     if(!sql_connection.open()){
-        qDebug()<<"Chat_logins DB connection  FAIL!";
+        logger_api->message_handler(logger::TypeError::ERROR,"<sql_engine>"
+                                    ,"open_and_proof_DB_connection"
+                                    ,"database connection fail!");
         return;
     }
 }
@@ -50,7 +54,9 @@ void sql_engine::select_logins_already_chatted_slot(const QString& user_login){
                        "ORDER BY frequency DESC;"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Chat_logins DB select logins FAIL!";
+        logger_api->message_handler(logger::TypeError::ERROR,"<sql_engine>"
+                                    ,"select_logins_already_chatted_slot"
+                                    ,"sql query fail: "+data_base_query->lastError().text());
         return;
     }
 
@@ -74,7 +80,9 @@ void sql_engine::insert_new_chat_login_slot(const QString& user_login,const QStr
     " WHERE login_own ='"+user_login+"' AND login_to = '"+login_to+"' ;"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Chat_logins DB proof login FAIL! "<<data_base_query->lastError();
+        logger_api->message_handler(logger::TypeError::ERROR,"<sql_engine>"
+                                    ,"insert_new_chat_login_slot"
+                                    ,"sql select query fail: "+data_base_query->lastError().text());
         return;
     }
 
@@ -93,7 +101,9 @@ void sql_engine::insert_new_chat_login_slot(const QString& user_login,const QStr
                        "VALUES ('"+user_login+"' , '"+login_to+"' , '0');";
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Chat_logins DB insert login FAIL!";
+        logger_api->message_handler(logger::TypeError::ERROR,"<sql_engine>"
+                                    ,"insert_new_chat_login_slot"
+                                    ,"sql select fail: "+data_base_query->lastError().text());
         return;
     }
     data_base_query->clear();
@@ -106,9 +116,10 @@ void sql_engine::update_frequency_slot(const QString& user_login,const QString& 
                        "WHERE login_own = '"+user_login+"' AND login_to = '"+login_to+"' ;"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Chat_logins DB insert login FAIL!";
+        logger_api->message_handler(logger::TypeError::ERROR,"<sql_engine>"
+                                    ,"update_frequency_slot"
+                                    ,"sql query fail: "+data_base_query->lastError().text());
         return;
     }
     data_base_query->clear();
-
 }

@@ -1,4 +1,5 @@
 //  Class that describes server API
+//  and main server logic
 
 #pragma once
 
@@ -7,7 +8,6 @@
 #include <tuple>
 
 #include <QHash>
-#include <QSet>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -18,10 +18,10 @@
 #include <QApplication>
 #include <QJsonObject>
 #include <QJsonDocument>
-
 #include <QDateTime>
 
 #include "sql_engine.h"
+#include "logger.h"
 
 enum class SQL_STATE{
     NONE,
@@ -47,14 +47,16 @@ private:
     QSet<QTcpSocket*>socket_list;
 
     QPointer<sql_engine> data_base;
+    QPointer<logger> logger_api;
 
     QPointer<QTcpServer> user_server;
-    quint16 next_block_size;
 
     std::vector<QString> list_of_users;
     std::vector<std::tuple<QString,QString,QString>>message_story;
 
 private slots:
+
+    void stop_server_slot();
 
     void new_connection_slot();
     void ready_read_slot();
@@ -64,20 +66,20 @@ private slots:
     //  SQL slots
     //  Registration slots
     void registration_answer_slot(QTcpSocket* user_socket,const QString &login);
-    void registration_fail_slot();
-    void registration_success_slot();
+    void registration_fail_slot()noexcept;
+    void registration_success_slot()noexcept;
 
     //  Login slots
     void login_answer_slot(QTcpSocket * user_socket,const QString &login);
-    void login_success_slot();
-    void login_fail_login_slot();
-    void login_fail_pass_slot();
+    void login_success_slot()noexcept;
+    void login_fail_login_slot()noexcept;
+    void login_fail_pass_slot()noexcept;
 
     //  Find Users slots
     void logins_list_answer_slot(QTcpSocket * user_socket,const QString& login);
     void become_users_list_answer_slot(const std::vector<QString>logins_list);
-    void users_not_found_slot();
-    void users_found_success_slot();
+    void users_not_found_slot()noexcept;
+    void users_found_success_slot()noexcept;
 
     //  Message slots
     void send_message_slot(const QString &login_from,const QString &login_to,const QString &message);
@@ -86,4 +88,5 @@ private slots:
 
 public:
     explicit main_server(QObject * parent = 0);
+    ~main_server();
 };

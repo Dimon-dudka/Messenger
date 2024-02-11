@@ -24,7 +24,12 @@
 #include "registration_menu.h"
 #include "messenger_main_menu.h"
 #include "find_users_menu.h"
+
+//  local DB
 #include "sql_engine.h"
+
+//  logger
+#include "logger.h"
 
 enum class WHAT_FAIL{
     NONE,
@@ -67,6 +72,7 @@ private:
     QPointer <messenger_main_menu> messenger_menu_widget;
     QPointer <find_users_menu> find_users_widget;
     QPointer <sql_engine> local_DB;
+    QPointer <logger> logger_api;
 
     //  To update frequency in DB
     QHash<QString,unsigned int>login_frequency;
@@ -75,15 +81,15 @@ private:
     
 private slots:
 
-    void update_login_frequency_hash_slot(const std::vector<QString>& logins);
+    void update_login_frequency_hash_slot(const std::vector<QString>& logins)noexcept;
     void proof_add_logins_hash(const QString & login_to);
     void print_basic_users_slot();
 
     //  Socket slots
-    void on_socket_connected();
-    void on_socket_disconnected();
+    void on_socket_connected()noexcept;
+    void on_socket_disconnected()noexcept;
     void on_socket_ready_read();
-    void on_socket_display_error(QAbstractSocket::SocketError socket_error);
+    void on_socket_display_error(QAbstractSocket::SocketError socket_error)noexcept;
     bool connect_to_host();
 
     void register_login_to_server_slot(const QString& login,
@@ -94,29 +100,26 @@ private slots:
     void send_message_slot(const QString &login_to,const QString &message);
 
     void send_message_history_request_slot(const QString &last_date,const QString &login_to);
-    //void print_message_story_slot(const std::vector<std::tuple<QString,QString,QString>> data);
 
     //  Frontend slots
-    void choise_slot_after_problem_menu();
+    void choise_slot_after_problem_menu()noexcept;
 
-    void set_current_fails_menu_slot();
-    void set_current_login_menu_slot();
-    void set_current_registration_menu_slot();
-    void set_current_messenger_main_slot();
-    void set_current_find_users_menu_slot();
+    void set_current_fails_menu_slot()noexcept;
+    void set_current_login_menu_slot()noexcept;
+    void set_current_registration_menu_slot()noexcept;
+    void set_current_messenger_main_slot()noexcept;
+    void set_current_find_users_menu_slot()noexcept;
 
     //  Fails slots
-    void registration_frontend_fail_slot();
-    void registration_backend_fail_slot();
+    void registration_frontend_fail_slot()noexcept;
+    void registration_backend_fail_slot()noexcept;
 
-    void login_backend_fail_slot();
-    void login_frontend_fail_slot();
+    void login_backend_fail_slot()noexcept;
+    void login_frontend_fail_slot()noexcept;
 
-    void find_users_backend_fail_slot();
-    void find_users_frontend_fail_slot();
+    void find_users_backend_fail_slot()noexcept;
+    void find_users_frontend_fail_slot()noexcept;
 
-
-    
 public:
     
     widget_manager(QStackedWidget *parrent = 0);

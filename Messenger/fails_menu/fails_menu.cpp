@@ -22,7 +22,7 @@ fails_menu::fails_menu(QWidget *parrent):QWidget(parrent)
     connect(try_again_button,SIGNAL(clicked()),this,SLOT(try_again_button_slot()));
 }
 
-void fails_menu::try_again_button_slot(){
+void fails_menu::try_again_button_slot()noexcept{
     emit try_again_signal();
 }
 

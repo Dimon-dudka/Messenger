@@ -1,14 +1,13 @@
 
 #include "sql_engine.h"
 
-sql_engine::sql_engine(QObject *parrent):QObject(parrent)
+sql_engine::sql_engine(QObject *parrent,logger* log):QObject(parrent),logger_api(log)
 {
     sql_connection = QSqlDatabase::addDatabase("QSQLITE");
     data_base_query = new QSqlQuery;
     data_base_directory = QFileInfo(QCoreApplication::applicationFilePath()).path();
 
     open_data_bases();
-
 }
 
 void sql_engine::change_connection_to_user_info(){
@@ -18,6 +17,10 @@ void sql_engine::change_connection_to_user_info(){
 
     if(!sql_connection.open()){
         qDebug()<<"User info DB connection  FAIL!";
+        logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
+                                    ,"change_connection_to_user_info"
+                                    ,"unable to open user_info database!");
+        emit stop_server_signal();
         return;
     }
 
@@ -31,11 +34,14 @@ void sql_engine::change_connection_to_messages(){
 
     if(!sql_connection.open()){
         qDebug()<<"User messages DB connection  FAIL!";
+        logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
+                                    ,"change_connection_to_user_info"
+                                    ,"unable to open messages_info database!");
+        emit stop_server_signal();
         return;
     }
 
     data_base_query->clear();
-
 }
 
 void sql_engine::open_data_bases(){
@@ -49,6 +55,10 @@ void sql_engine::open_data_bases(){
 
     if(!data_base_query->exec(query_text)){
         qDebug()<<"User info DB open FAIL!";
+        logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
+                                    ,"open_data_bases"
+                                    ,"unable to create user_info database: "+data_base_query->lastError().text());
+        emit stop_server_signal();
         return;
     }
 
@@ -64,10 +74,12 @@ void sql_engine::open_data_bases(){
 
     if(!data_base_query->exec(query_text)){
         qDebug()<<"User messages DB open FAIL!";
+        logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
+                                    ,"open_data_bases"
+                                    ,"unable to create messages database: "+data_base_query->lastError().text());
+        emit stop_server_signal();
         return;
     }
-
-
 }
 
 void sql_engine::user_registration(const QString &login,const QString &password){
@@ -91,6 +103,9 @@ void sql_engine::user_login(const QString &login,const QString &password){
 
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query!";
+        logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
+                                    ,"user_login"
+                                    ,"executing sql query fail: "+data_base_query->lastError().text());
         emit login_not_exists_signal();
         return;
     }
@@ -124,6 +139,9 @@ void sql_engine::find_users(const QString &login,const QString& part_of_login){
 
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query!";
+        logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
+                                    ,"find_users"
+                                    ,"executing sql query fail: "+data_base_query->lastError().text());
         emit users_not_found_signal();
         return;
     }
@@ -137,7 +155,6 @@ void sql_engine::find_users(const QString &login,const QString& part_of_login){
         emit users_not_found_signal();
         return;
     }
-
     emit list_of_logins_signal(std::move(users_vector));
 }
 
@@ -152,7 +169,9 @@ void sql_engine::become_message_history(const QString &login_first,const QString
 
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query in becoming message story!";
-
+        logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
+                                    ,"become_message_history"
+                                    ,"executing sql query fail: "+data_base_query->lastError().text());
         return;
     }
 
@@ -176,7 +195,6 @@ void sql_engine::become_message_history(const QString &login_first,const QString
 
 void sql_engine::insert_message(const QString &login_from,
                          const QString &login_to,const QString &message,const QString &datetime){
-
     change_connection_to_messages();
 
     QString query_text{"INSERT INTO messages ( sender , getter , date_time , message ) "
@@ -184,8 +202,9 @@ void sql_engine::insert_message(const QString &login_from,
 
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query!";
-
+        logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
+                                    ,"insert_message"
+                                    ,"executing sql query fail: "+data_base_query->lastError().text());
         return;
     }
-
 }
