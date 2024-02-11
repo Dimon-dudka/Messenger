@@ -102,7 +102,7 @@ void sql_engine::insert_new_chat_login_slot(const QString& user_login,const QStr
 void sql_engine::update_frequency_slot(const QString& user_login,const QString& login_to){
     open_and_proof_DB_connection();
 
-    QString query_text{"UPDATE chat_logins SET frequency = 'frequency' + 1 "
+    QString query_text{"UPDATE chat_logins SET frequency = frequency + 1 "
                        "WHERE login_own = '"+user_login+"' AND login_to = '"+login_to+"' ;"};
 
     if(!data_base_query->exec(query_text)){

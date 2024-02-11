@@ -73,8 +73,8 @@ void sql_engine::open_data_bases(){
 void sql_engine::user_registration(const QString &login,const QString &password){
     change_connection_to_user_info();
 
-    QString query_text{"INSERT INTO user_info (login, password)"
-                       "VALUES ( '"+login+"', '"+password+"' )"};
+    QString query_text{"INSERT INTO user_info (login, password) "
+                       "VALUES ( '"+login+"', '"+password+"' );"};
 
     if(!data_base_query->exec(query_text)){
         emit user_already_exists_signal();
@@ -141,28 +141,30 @@ void sql_engine::find_users(const QString &login,const QString& part_of_login){
     emit list_of_logins_signal(std::move(users_vector));
 }
 
-
-void sql_engine::become_message_story(const QString &login_first,const QString &login_second,const QString &date){
+void sql_engine::become_message_history(const QString &login_first,const QString &login_second,const QString &date){
     change_connection_to_messages();
 
     QString query_text{"SELECT sender, date_time, message FROM messages "
-                       "WHERE ((sender = '"+login_first+"' AND getter = '"+login_second+"') "
-                       "OR    (sender = '"+login_second+"' AND getter = '"+login_first+"')) "
+                       "WHERE ((sender = '"+login_first+"' AND getter = '"+login_second+"' ) "
+                       "OR    (sender = '"+login_second+"' AND getter = '"+login_first+"' )) "
                        "AND date_time < '"+date+"' "
-                       "ORDER BY  DESC ; "};
+                       "ORDER BY date_time DESC ;"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query!";
+        qDebug()<<"Fail by executing sql query in becoming message story!";
 
         return;
     }
 
     std::vector<std::tuple<QString,QString,QString>>data_from_sql;
 
-    while(data_base_query->next()){
+    unsigned int count{0};
+
+    while(data_base_query->next()&&count<20){
         data_from_sql.push_back(std::make_tuple(data_base_query->value(0).toString(),
                                                 data_base_query->value(1).toString(),
                                                 data_base_query->value(2).toString()));
+        count+=1;
     }
 
     if(data_from_sql.empty()){
@@ -170,4 +172,20 @@ void sql_engine::become_message_story(const QString &login_first,const QString &
     }
 
     emit messeges_list_signal(std::move(data_from_sql));
+}
+
+void sql_engine::insert_message(const QString &login_from,
+                         const QString &login_to,const QString &message,const QString &datetime){
+
+    change_connection_to_messages();
+
+    QString query_text{"INSERT INTO messages ( sender , getter , date_time , message ) "
+                " VALUES ('"+login_from+"' , '"+login_to+"' , '"+datetime+"' , '"+message+"');"};
+
+    if(!data_base_query->exec(query_text)){
+        qDebug()<<"Fail by executing sql query!";
+
+        return;
+    }
+
 }

@@ -93,6 +93,9 @@ private slots:
 
     void send_message_slot(const QString &login_to,const QString &message);
 
+    void send_message_history_request_slot(const QString &last_date,const QString &login_to);
+    //void print_message_story_slot(const std::vector<std::tuple<QString,QString,QString>> data);
+
     //  Frontend slots
     void choise_slot_after_problem_menu();
 

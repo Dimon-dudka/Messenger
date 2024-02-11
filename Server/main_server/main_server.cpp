@@ -36,13 +36,20 @@ main_server::main_server(QObject * parent) : QObject(parent)
             this,SLOT(become_users_list_answer_slot(std::vector<QString>)));
     connect(data_base,SIGNAL(list_of_logins_signal(std::vector<QString>)),
             this,SLOT(users_found_success_slot()));
+
+    //  Message history connections
+    connect(data_base,SIGNAL(messeges_list_signal(std::vector<std::tuple<QString,QString,QString>>))
+            ,this,SLOT(become_message_history_slot(std::vector<std::tuple<QString,QString,QString>>)));
 }
 
 void main_server::new_connection_slot(){
     QPointer<QTcpSocket> new_user_socket = user_server->nextPendingConnection();
 
     connect(new_user_socket,SIGNAL(disconnected()),new_user_socket,SLOT(deleteLater()));
+    connect(new_user_socket,SIGNAL(disconnected()),this,SLOT(socket_disconnect_slot()));
     connect(new_user_socket,SIGNAL(readyRead()),this,SLOT(ready_read_slot()));
+
+    socket_list.insert(new_user_socket);
 
     qDebug()<<"New connected user: "<<new_user_socket->peerAddress();
 }
@@ -88,15 +95,76 @@ void main_server::ready_read_slot(){
     else if(user_json_object["type"]=="message"){
 
         QDateTime current = QDateTime::currentDateTime();
-        qDebug()<<current.toString("yyyy-MM-dd  HH:mm:ss");
 
-        qDebug()<<"Message ok!";
+        data_base->insert_message(input_data["login_from"].toString(),input_data["login_to"].toString(),
+               input_data["message"].toString(), current.toString("yyyy-MM-dd  HH:mm:ss"));
+
+        if(login_and_socket_table.find(input_data["login_to"].toString())!=login_and_socket_table.end()){
+            send_message_slot(input_data["login_from"].toString(),
+                              input_data["login_to"].toString(),input_data["message"].toString());
+        }
+
+        sql_answer=SQL_STATE::NONE;
+
     }
     else if(user_json_object["type"]=="message_list"){
 
+        data_base->become_message_history(input_data["login_from"].toString()
+                ,input_data["login_to"].toString(),input_data["last_datetime"].toString());
 
+        send_message_history_slot(user_socket_data);
+
+        sql_answer=SQL_STATE::NONE;
+    }
+}
+
+void main_server::send_message_history_slot(QTcpSocket * user_socket){
+    QJsonObject answer_to_client,answer_data;
+    QJsonArray data_array;
+
+    answer_to_client["type"]="message_list";
+
+    for(const auto&w:message_story){
+        QJsonObject message_object;
+        message_object["sender"]=get<0>(w);
+        message_object["date_time"]=get<1>(w);
+        message_object["message"]=get<2>(w);
+
+        data_array.append(message_object);
 
     }
+
+    message_story.clear();
+
+    answer_data["messages"]=data_array;
+    answer_to_client["data"]=answer_data;
+
+    QJsonDocument doc(answer_to_client);
+    //qDebug()<<doc.toJson();
+    QByteArray json_byte_array = doc.toJson();
+    user_socket->write(json_byte_array);
+}
+
+void main_server::become_message_history_slot(const std::vector<std::tuple<QString,QString,QString>>& data){
+    if(message_story.empty()){
+        message_story = std::move(data);
+    }
+}
+
+void main_server::send_message_slot(const QString &login_from,const QString &login_to,const QString &message){
+    QJsonObject message_to_client,message_data;
+    message_to_client["type"]="message";
+
+    message_data["login_from"]=login_from;
+    message_data["login_to"]=login_to;
+    message_data["message"]=message;
+
+    message_to_client["data"]=message_data;
+
+    QJsonDocument doc(message_to_client);
+    QByteArray json_byte_array = doc.toJson();
+
+    login_and_socket_table[login_to]->write(json_byte_array);
 }
 
 void main_server::registration_fail_slot(){
@@ -106,7 +174,6 @@ void main_server::registration_fail_slot(){
 void main_server::registration_success_slot(){
     sql_answer=SQL_STATE::REGISTRATION_SUCCESS;
 }
-
 
 void main_server::registration_answer_slot(QTcpSocket* user_socket,const QString& login){
     QJsonObject answer_to_client,answer_data;
@@ -119,6 +186,7 @@ void main_server::registration_answer_slot(QTcpSocket* user_socket,const QString
         answer_data["problem"]="none";
 
         login_and_socket_table[login]=user_socket;
+        socket_and_login_table[user_socket]=login;
 
         break;
     case SQL_STATE::REGISTRATION_FAIL:
@@ -153,6 +221,7 @@ void main_server::login_answer_slot(QTcpSocket * user_socket,const QString& logi
         answer_data["problem"]="none";
 
         login_and_socket_table[login]=user_socket;
+        socket_and_login_table[user_socket]=login;
 
         break;
     }
@@ -173,7 +242,6 @@ void main_server::become_users_list_answer_slot(const std::vector<QString>logins
 void main_server::logins_list_answer_slot(QTcpSocket * user_socket,const QString& login){
     QJsonObject answer_to_client,answer_data;
     QJsonArray array_of_logins;
-
 
     answer_to_client["type"]="users_list";
 
@@ -200,6 +268,17 @@ void main_server::logins_list_answer_slot(QTcpSocket * user_socket,const QString
 
     QByteArray json_byte_array = doc.toJson();
     user_socket->write(json_byte_array);
+}
+
+void main_server::socket_disconnect_slot(){
+    QPointer<QTcpSocket>disconnected_socket = qobject_cast<QTcpSocket*>(sender());
+
+    login_and_socket_table.remove(socket_and_login_table[disconnected_socket]);
+    socket_and_login_table.remove(disconnected_socket);
+
+    socket_list.remove(disconnected_socket);
+    qDebug()<<"User disconnected"<<disconnected_socket->peerAddress();
+
 }
 
 void main_server::users_not_found_slot(){

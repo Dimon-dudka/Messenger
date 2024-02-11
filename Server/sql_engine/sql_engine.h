@@ -36,7 +36,10 @@ public slots:
     void user_registration(const QString &login,const QString &password);
     void user_login(const QString &login,const QString &password);
     void find_users(const QString &login,const QString& part_of_login);
-    void become_message_story(const QString &login_first,const QString &login_second,const QString &date);
+    void become_message_history(const QString &login_first,const QString &login_second,const QString &date);
+    void insert_message(const QString &login_from,
+                        const QString &login_to,const QString &message,const QString &datetime);
+
 
 signals:
     //  Registration signals
@@ -53,6 +56,6 @@ signals:
     void users_not_found_signal();
 
     //  become messeges list signals
-    void messeges_list_signal(const std::vector<std::tuple<QString,QString,QString>>);
+    void messeges_list_signal(std::vector<std::tuple<QString,QString,QString>>);
 
 };

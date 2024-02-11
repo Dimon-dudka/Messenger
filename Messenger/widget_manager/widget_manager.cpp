@@ -74,6 +74,8 @@ widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
     connect(messenger_menu_widget,SIGNAL(find_users_signal()),this,SLOT(set_current_find_users_menu_slot()));
     connect(messenger_menu_widget,SIGNAL(send_message_signal(QString,QString)),
             this,SLOT(send_message_slot(QString,QString)));
+    connect(messenger_menu_widget,SIGNAL(become_message_history(QString,QString)),
+            this,SLOT(send_message_history_request_slot(QString,QString)));
 
     //  find users menu connections
     connect(find_users_widget,SIGNAL(back_button_signal()),this,SLOT(set_current_messenger_main_slot()));
@@ -194,7 +196,6 @@ void widget_manager::on_socket_ready_read(){
 
     if(json_type_message["type"]=="registration"){
         if(message_info["answer"]=="success"){
-            qDebug()<<"Registration success";
             login_status=LOGIN_STATUS::OK;
             set_current_messenger_main_slot();
             return;
@@ -206,7 +207,6 @@ void widget_manager::on_socket_ready_read(){
     }
     else if (json_type_message["type"]=="login"){
         if(message_info["answer"]=="success"){
-            qDebug()<<"Login success";
             login_status=LOGIN_STATUS::OK;
             set_current_messenger_main_slot();
             return;
@@ -235,9 +235,28 @@ void widget_manager::on_socket_ready_read(){
         }
     }
     else if(json_type_message["type"]=="message"){
+        if(message_info["login_to"].toString()!=user_login){
+            return;
+        }
 
-    }else if(json_type_message["type"]=="message_list"){
+        messenger_menu_widget->push_new_message_slot(message_info["login_from"].toString(),message_info["message"].toString());
 
+
+    }
+    else if(json_type_message["type"]=="message_list"){
+
+        std::vector<std::tuple<QString,QString,QString>>server_data;
+
+        QJsonArray message_array = message_info["messages"].toArray();
+
+        for(const auto&w:message_array){
+           QJsonObject tmp= w.toObject();
+           server_data.push_back({tmp["sender"].toString(),
+                                  tmp["date_time"].toString()
+                                 ,tmp["message"].toString()});
+        }
+
+        messenger_menu_widget->print_message_story_slot(std::move(server_data));
     }
 
 }
@@ -264,7 +283,6 @@ bool widget_manager::connect_to_host(){
 
     if(user_socket->state()==QAbstractSocket::ConnectedState){
         fail_type=WHAT_FAIL::NONE;
-        //set_current_login_menu_slot();
         return 1;
     }
     return 0;
@@ -318,13 +336,15 @@ void widget_manager::send_message_slot(const QString &login_to,const QString &me
 
     data_object["login_from"]=user_login;
     data_object["login_to"]=login_to;
-    data_object["datetime"]=current_date_time.toString();
     data_object["message"]=message;
+    message_to_server["data"]=data_object;
 
     QJsonDocument doc(message_to_server);
     QByteArray jsonData = doc.toJson();
 
     user_socket->write(jsonData);
+
+    local_DB->update_frequency_slot(user_login,login_to);
 
 }
 
@@ -346,4 +366,20 @@ void widget_manager::proof_add_logins_hash(const QString & login_to){
 
 void widget_manager::print_basic_users_slot(){
     local_DB->select_logins_already_chatted_slot(user_login);
+}
+
+void widget_manager::send_message_history_request_slot(const QString &last_date,const QString &login_to){
+    QJsonObject message_to_server,data_object;
+
+    message_to_server["type"]="message_list";
+
+    data_object["login_from"]=user_login;
+    data_object["login_to"]=login_to;
+    data_object["last_datetime"]=last_date;
+    message_to_server["data"]=data_object;
+
+    QJsonDocument doc(message_to_server);
+    QByteArray jsonData = doc.toJson();
+
+    user_socket->write(jsonData);
 }

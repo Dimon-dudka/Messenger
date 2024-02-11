@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QBoxLayout>
 #include <QPushButton>
+#include <QScrollBar>
 #include <QTextBrowser>
 
 class messenger_main_menu : public QWidget
@@ -28,6 +29,7 @@ private slots:
 
     void another_user_button_slot();
     void send_button_slot();
+    void scroll_value_changed(int value);
 
 public:
     messenger_main_menu(QWidget *parrent = 0);
@@ -35,10 +37,12 @@ public:
 public slots:
 
     void change_another_user_label_slot(const QString &login);
+    void push_new_message_slot(const QString &login_from,const QString &message);
+    void print_message_story_slot(const std::vector<std::tuple<QString,QString,QString>>& data);
 
 signals:
 
     void find_users_signal();
     void send_message_signal(QString,QString);
-
+    void become_message_history(QString,QString);
 };
