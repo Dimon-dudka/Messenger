@@ -16,7 +16,7 @@ void sql_engine::change_connection_to_user_info(){
     sql_connection.setDatabaseName(data_base_directory+"/user_info.sqlite");
 
     if(!sql_connection.open()){
-        qDebug()<<"User info DB connection  FAIL!";
+        qDebug()<<"User info DB connection FAIL!";
         logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
                                     ,"change_connection_to_user_info"
                                     ,"unable to open user_info database!");
@@ -33,7 +33,7 @@ void sql_engine::change_connection_to_messages(){
     sql_connection.setDatabaseName(data_base_directory+"/messages_info.sqlite");
 
     if(!sql_connection.open()){
-        qDebug()<<"User messages DB connection  FAIL!";
+        qDebug()<<"User messages DB connection FAIL!";
         logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
                                     ,"change_connection_to_user_info"
                                     ,"unable to open messages_info database!");
@@ -102,7 +102,7 @@ void sql_engine::user_login(const QString &login,const QString &password){
                        "WHERE login == '"+login+"';"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query!";
+        qDebug()<<"Fail by executing sql query in user_login!";
         logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
                                     ,"user_login"
                                     ,"executing sql query fail: "+data_base_query->lastError().text());
@@ -116,18 +116,15 @@ void sql_engine::user_login(const QString &login,const QString &password){
     }
 
     if(tmp_pass.isEmpty()){
-        qDebug()<<"login not exists";
         emit login_not_exists_signal();
         return;
     }
 
     if(password!=tmp_pass){
-        qDebug()<<"incorrect pass";
         emit login_incorrect_pass_signal();
         return;
     }
 
-    qDebug()<<"login success";
     emit login_success_signal();
 }
 
@@ -138,7 +135,7 @@ void sql_engine::find_users(const QString &login,const QString& part_of_login){
                        " WHERE login LIKE '"+part_of_login+"%' AND login != '"+login+"' ;"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query!";
+        qDebug()<<"Fail by executing sql query in find_users!";
         logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
                                     ,"find_users"
                                     ,"executing sql query fail: "+data_base_query->lastError().text());
@@ -201,7 +198,7 @@ void sql_engine::insert_message(const QString &login_from,
                 " VALUES ('"+login_from+"' , '"+login_to+"' , '"+datetime+"' , '"+message+"');"};
 
     if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query!";
+        qDebug()<<"Fail by executing sql query in insert_message!";
         logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
                                     ,"insert_message"
                                     ,"executing sql query fail: "+data_base_query->lastError().text());

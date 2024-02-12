@@ -2,6 +2,9 @@
 
 widget_manager::widget_manager(QStackedWidget *parrent):QStackedWidget(parrent)
 {
+    QPixmap pix(":images/logo.png");
+    setWindowIcon(QIcon(pix));
+
     current_date_time=QDateTime::currentDateTime();
 
     logger_api = new logger;

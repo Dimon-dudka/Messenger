@@ -67,13 +67,12 @@ void messenger_main_menu::send_button_slot(){
             break;
         }
     }
-
     if(flag_empty_message){
         return;
     }
 
-    emit send_message_signal(talker_login_label->text(),message_line_edit->text());
     messages_text_browser->append("You: "+message_line_edit->text());
+    emit send_message_signal(talker_login_label->text(),std::move(message_line_edit->text()));
     message_line_edit->clear();
 }
 
