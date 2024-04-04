@@ -24,6 +24,7 @@ set(HEADERS
         ${CMAKE_SOURCE_DIR}/main_server/main_server.h
         ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.h
         ${CMAKE_SOURCE_DIR}/logger/logger.h
+        ${CMAKE_SOURCE_DIR}/thread_sheduler/thread_sheduler.h
 )
 
 set(SOURCES
@@ -31,10 +32,12 @@ set(SOURCES
         ${CMAKE_SOURCE_DIR}/main_server/main_server.cpp
         ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.cpp
         ${CMAKE_SOURCE_DIR}/logger/logger.cpp
+        ${CMAKE_SOURCE_DIR}/thread_sheduler/thread_sheduler.cpp
 )
 
 add_executable(Server ${SOURCES} ${HEADERS}
     ${CMAKE_SOURCE_DIR}/resources/server_structure.qmodel
+    thread_sheduler/thread_sheduler.h thread_sheduler/thread_sheduler.cpp
 )
 
 target_include_directories(Server
@@ -42,6 +45,7 @@ target_include_directories(Server
     PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine
     PUBLIC ${CMAKE_SOURCE_DIR}/logger
     PUBLIC ${CMAKE_SOURCE_DIR}/resources
+    PUBLIC ${CMAKE_SOURCE_DIR}/thread_sheduler
 )
 
 target_link_libraries(Server

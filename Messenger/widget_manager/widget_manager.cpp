@@ -248,6 +248,9 @@ void widget_manager::on_socket_ready_read(){
         }
         messenger_menu_widget->print_message_story_slot(std::move(server_data));
     }
+    else{
+        qDebug()<<"Fuck";
+    }
 }
 
 void widget_manager::on_socket_connected()noexcept{

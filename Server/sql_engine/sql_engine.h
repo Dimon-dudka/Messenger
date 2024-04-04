@@ -6,10 +6,12 @@
 //  STL containers
 #include <vector>
 #include <tuple>
+#include <mutex>
 
 #include <QtSql>
 #include <QObject>
 #include <QString>
+#include <QMutex>
 #include <QPointer>
 #include <QCoreApplication>
 
@@ -19,6 +21,8 @@ class sql_engine : public QObject
 {
     Q_OBJECT
 private:
+
+    std::mutex global_mutex;
 
     QSqlDatabase sql_connection;
     QSqlQuery* data_base_query;
