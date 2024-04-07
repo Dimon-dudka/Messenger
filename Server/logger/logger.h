@@ -30,8 +30,11 @@ public:
 
     logger(QObject * parrent = 0);
 
+    void clear_the_file();
+
+public slots:
+
     void message_handler(TypeError type,const QString &file,const QString &whereAccident,const QString &message);
 
-    void clear_the_file();
 };
 

@@ -3,10 +3,6 @@
 
 #pragma once
 
-//  STL containers
-#include <vector>
-#include <tuple>
-
 #include <QHash>
 #include <QObject>
 #include <QString>
@@ -31,12 +27,15 @@ class main_server : public QObject
     Q_OBJECT
 private:
 
+    bool is_server_stoped;
+
     QHash<QString,quintptr> login_and_socket_table;
     QMap<quintptr,QString> socket_and_login_table;
 
     QMap<quintptr,QTcpSocket*>desc_and_socket;
 
     QPointer<logger> logger_api;
+    QPointer<sql_engine> sql_engine_api;
 
     QPointer<QTcpServer> user_server;
 private slots:
@@ -50,10 +49,10 @@ private slots:
 
     //  Answer on thread signals
     void send_answer_slot(const quintptr &user_desc,const QByteArray &user_answer);
-    void write_into_logger_slot(const logger::TypeError& error_type,
-                                const QString &file,const QString &ffunction_fail,const QString &what);
+    //void write_into_logger_slot(const TypeError& error_type,
+    //                            const QString &file,const QString &ffunction_fail,const QString &what);
 
 public:
     explicit main_server(QObject * parent = 0);
-    ~main_server();
+    ~main_server() = default;
 };

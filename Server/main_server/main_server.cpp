@@ -3,6 +3,8 @@
 
 main_server::main_server(QObject * parent) : QObject(parent)
 {
+    is_server_stoped = 0;
+
     user_server = new QTcpServer(this);
 
     logger_api = new logger;
@@ -22,15 +24,21 @@ main_server::main_server(QObject * parent) : QObject(parent)
     //  New socket connection
     connect(user_server,SIGNAL(newConnection()),this,SLOT(new_connection_slot()));
 
-    //  SQL connections
-    //connect(data_base,SIGNAL(stop_server_signal()),this,SLOT(stop_server_slot()));
-}
+    sql_engine_api = new sql_engine;
 
-main_server::~main_server(){
-    logger_api->message_handler(logger::TypeError::INFO,"<main_server>","~main_server","server stoped");
+    connect(sql_engine_api,SIGNAL(logger_signal(TypeError,QString,QString,QString))
+            ,logger_api,SLOT(message_handler(TypeError,QString,QString,QString)));
+    connect(sql_engine_api,SIGNAL(stop_server_signal()),this,SLOT(stop_server_slot()));
+
 }
 
 void main_server::stop_server_slot(){
+
+    if(is_server_stoped){
+        return;
+    }
+    is_server_stoped=1;
+
     for(auto [key,value]:desc_and_socket.asKeyValueRange()){
         value->disconnect();
     }
@@ -38,6 +46,8 @@ void main_server::stop_server_slot(){
     desc_and_socket.clear();
     login_and_socket_table.clear();
     socket_and_login_table.clear();
+
+    logger_api->message_handler(logger::TypeError::INFO,"<main_server>","stop_server_slot","server stoped");
 
     this->~main_server();
     QCoreApplication::exit(1);
@@ -79,14 +89,31 @@ void main_server::ready_read_slot(){
     QPointer<QThread> new_thread = new QThread;
     worker->moveToThread(new_thread.get());
 
+    //  Thread-object connections
     connect(new_thread,SIGNAL(started()),worker,SLOT(read_from_socket()));
-    connect(worker,SIGNAL(finished()),new_thread,SLOT(quit()));
-    connect(worker,SIGNAL(finished()),worker,SLOT(deleteLater()));
     connect(new_thread,SIGNAL(finished()),new_thread,SLOT(deleteLater()));
 
+    connect(worker,SIGNAL(finished()),new_thread,SLOT(quit()));
+    connect(worker,SIGNAL(finished()),worker,SLOT(deleteLater()));
+
+    //  Object-SQL connections
+    //  Send request connection
+    connect(worker,SIGNAL(request_to_sql_signal(Request_struct))
+            ,sql_engine_api,SLOT(get_user_request(Request_struct)));
+
+    //Become request from sql connection
+    connect(sql_engine_api,SIGNAL(answer_request(Answer_to_thread))
+            ,worker,SLOT(request_answer_slot(Answer_to_thread)));
+
+    //  Answer to client connections
+    connect(new_thread, &QThread::started, [new_thread]() {
+        qDebug() << "New thread ID: " << new_thread->currentThreadId();
+    });
     connect(worker,SIGNAL(answer_signal(quintptr,QByteArray)),this,SLOT(send_answer_slot(quintptr,QByteArray)));
-    connect(worker,SIGNAL(logger_signal(logger::TypeError,QString,QString,QString))
-            ,this,SLOT(write_into_logger_slot(logger::TypeError,QString,QString,QString)));
+
+    //  Logger signal
+    connect(worker,SIGNAL(logger_signal(TypeError,QString,QString,QString))
+            ,logger_api,SLOT(message_handler(TypeError,QString,QString,QString)));
 
     new_thread->start();
 
@@ -99,11 +126,6 @@ void main_server::send_answer_slot(const quintptr &user_desc,const QByteArray &u
         logger_api->message_handler(logger::TypeError::ERROR,"<main_server>","send_answer_slot",
                     "Answer to "+socket_and_login_table[user_desc]+" does not send");
     }
-}
-
-void main_server::write_into_logger_slot(const logger::TypeError& error_type,
-                                         const QString &file,const QString &function_fail,const QString &what){
-    logger_api->message_handler(error_type,file,function_fail,what);
 }
 
 void main_server::socket_disconnect_slot(){

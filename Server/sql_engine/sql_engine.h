@@ -1,71 +1,38 @@
-//  SQL Engine provides an interface to answer on server requests
-//  insert,update and read data from databases
+//  SQL Engine provides an API to send request into DB
 
 #pragma once
 
-//  STL containers
-#include <vector>
-#include <tuple>
-#include <mutex>
-
-#include <QtSql>
-#include <QObject>
-#include <QString>
-#include <QMutex>
+#include <QThread>
 #include <QPointer>
-#include <QCoreApplication>
 
-#include "logger.h"
+#include "messages_info_thread.h"
+#include "user_info_thread.h"
+
+#include "request_types.h"
 
 class sql_engine : public QObject
 {
     Q_OBJECT
 private:
+    QPointer<QThread>messages_thr,user_info_thr;
 
-    std::mutex global_mutex;
-
-    QSqlDatabase sql_connection;
-    QSqlQuery* data_base_query;
-    QString data_base_directory;
-
-    QPointer<logger>logger_api;
-
-    void open_data_bases();
-
-    //  Change connection to another table
-    void change_connection_to_user_info();
-    void change_connection_to_messages();
+    QPointer<messages_info_thread> messages_DB;
+    QPointer<user_info_thread> user_info_DB;
 
 public:
-    sql_engine(QObject *parrent = 0,logger* log = 0);
+    sql_engine(QObject *parrent = 0);
 
 public slots:
+    void get_user_request(const Request_struct& user_request);
 
-    void user_registration(const QString &login,const QString &password);
-    void user_login(const QString &login,const QString &password);
-    void find_users(const QString &login,const QString& part_of_login);
-    void become_message_history(const QString &login_first,const QString &login_second,const QString &date);
-    void insert_message(const QString &login_from,
-                        const QString &login_to,const QString &message,const QString &datetime);
-
+private slots:
+    void become_result_and_send_slot(const Answer_to_thread& user_answer);
+    void become_logger_message_slot(TypeError type,const QString &where
+                                    ,const QString &function,const QString& what);
+    void stop_server_slot();
 
 signals:
-    //  Registration signals
-    void user_already_exists_signal();
-    void registration_success_signal();
-
-    //  Login signals
-    void login_not_exists_signal();
-    void login_incorrect_pass_signal();
-    void login_success_signal();
-
-    //  become users signals
-    void list_of_logins_signal(const std::vector<QString>);
-    void users_not_found_signal();
-
-    //  become messeges list signals
-    void messeges_list_signal(std::vector<std::tuple<QString,QString,QString>>);
-
+    void answer_request(Answer_to_thread);
+    void logger_signal(TypeError,QString,QString,QString);
     void stop_server_signal();
-
 };

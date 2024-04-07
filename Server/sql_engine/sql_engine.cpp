@@ -1,215 +1,68 @@
 
 #include "sql_engine.h"
 
-sql_engine::sql_engine(QObject *parrent,logger* log):QObject(parrent)//,logger_api(log)
+sql_engine::sql_engine(QObject *parrent):QObject(parrent)
 {
-    sql_connection = QSqlDatabase::addDatabase("QSQLITE");
-    data_base_query = new QSqlQuery;
-    data_base_directory = QFileInfo(QCoreApplication::applicationFilePath()).path();
 
-    open_data_bases();
+    messages_DB = new messages_info_thread;
+    user_info_DB = new user_info_thread;
+
+    messages_thr = new QThread;
+    user_info_thr = new QThread;
+
+    messages_DB->moveToThread(messages_thr.data());
+    user_info_DB->moveToThread(user_info_thr.data());
+
+    //  Messages_DB connections
+    connect(messages_thr,SIGNAL(started()),messages_DB,SLOT(work_slot()));
+    connect(messages_thr,SIGNAL(finished()),messages_thr,SLOT(deleteLater()));
+
+    connect(messages_DB,SIGNAL(finished()),messages_thr,SLOT(quit()));
+    connect(messages_DB,SIGNAL(finished()),messages_DB,SLOT(deleteLater()));
+
+    connect(messages_DB,SIGNAL(stop_server_signal()),this,SLOT(stop_server_slot()));
+
+    //  User_info_DB connections
+    connect(user_info_thr,SIGNAL(started()),user_info_DB,SLOT(work_slot()));
+    connect(user_info_thr,SIGNAL(finished()),user_info_thr,SLOT(deleteLater()));
+
+    connect(user_info_DB,SIGNAL(finished()),user_info_thr,SLOT(quit()));
+    connect(user_info_DB,SIGNAL(finished()),user_info_DB,SLOT(deleteLater()));
+
+    connect(user_info_DB,SIGNAL(stop_server_signal()),this,SLOT(stop_server_slot()));
+
+    //  Answer connections
+    connect(messages_DB,SIGNAL(answer_request(Answer_to_thread)),this,SLOT(become_result_and_send_slot(Answer_to_thread)));
+    connect(user_info_DB,SIGNAL(answer_request(Answer_to_thread)),this,SLOT(become_result_and_send_slot(Answer_to_thread)));
+
+    messages_thr->start();
+    user_info_thr->start();
 }
 
-void sql_engine::change_connection_to_user_info(){
-    data_base_query->clear();
+void sql_engine::get_user_request(const Request_struct& user_request){
+    switch(user_request.type){
+    case REQUEST_TYPES::LOGIN:
+    case REQUEST_TYPES::REGISTER:
+    case REQUEST_TYPES::USERS_LIST:
+        user_info_DB.data()->add_to_queue_slot(user_request);
+        break;
 
-    sql_connection.setDatabaseName(data_base_directory+"/user_info.sqlite");
-    sql_connection.setConnectOptions("QSQLITE_ENABLE_SHARED_CACHE");
-
-    if(!sql_connection.open()){
-        qDebug()<<"User info DB connection FAIL!";
-        //logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
-        //                            ,"change_connection_to_user_info"
-        //                            ,"unable to open user_info database!");
-        emit stop_server_signal();
-        return;
-    }
-
-    data_base_query->clear();
-}
-
-void sql_engine::change_connection_to_messages(){
-    data_base_query->clear();
-
-    sql_connection.setDatabaseName(data_base_directory+"/messages_info.sqlite");
-    sql_connection.setConnectOptions("QSQLITE_ENABLE_SHARED_CACHE");
-
-    if(!sql_connection.open()){
-        qDebug()<<"User messages DB connection FAIL!";
-        //logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
-       //                             ,"change_connection_to_user_info"
-        //                            ,"unable to open messages_info database!");
-        emit stop_server_signal();
-        return;
-    }
-
-    data_base_query->clear();
-}
-
-void sql_engine::open_data_bases(){
-
-    change_connection_to_user_info();
-
-    QString query_text{"CREATE TABLE IF NOT EXISTS user_info("
-            "login TEXT PRIMARY KEY UNIQUE,"
-            "password TEXT"
-            ");"};
-
-    if(!data_base_query->exec(query_text)){
-        qDebug()<<"User info DB open FAIL!";
-        //logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
-        //                            ,"open_data_bases"
-        //                            ,"unable to create user_info database: "+data_base_query->lastError().text());
-        emit stop_server_signal();
-        return;
-    }
-
-    change_connection_to_messages();
-
-    query_text= "CREATE TABLE IF NOT EXISTS messages("
-                 "messege_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                 "sender TEXT,"
-                 "getter TEXT,"
-                 "date_time TEXT,"
-                 "message TEXT"
-                 ");";
-
-    if(!data_base_query->exec(query_text)){
-        qDebug()<<"User messages DB open FAIL!";
-        //logger_api->message_handler(logger::TypeError::FATAL,"sql_engine"
-        //                            ,"open_data_bases"
-       //                             ,"unable to create messages database: "+data_base_query->lastError().text());
-        emit stop_server_signal();
-        return;
+    case REQUEST_TYPES::INSERT_MESSAGE:
+    case REQUEST_TYPES::MESSAGE_HISTORY:
+        messages_DB.data()->add_to_queue_slot(user_request);
+        break;
     }
 }
 
-void sql_engine::user_registration(const QString &login,const QString &password){
-
-    global_mutex.lock();
-
-    change_connection_to_user_info();
-
-    QString query_text{"INSERT INTO user_info (login, password) "
-                       "VALUES ( '"+login+"', '"+password+"' );"};
-
-    if(!data_base_query->exec(query_text)){
-        emit user_already_exists_signal();
-        return;
-    }
-
-    emit registration_success_signal();
-
-    global_mutex.unlock();
+void sql_engine::stop_server_slot(){
+    emit stop_server_signal();
 }
 
-void sql_engine::user_login(const QString &login,const QString &password){
-    change_connection_to_user_info();
-
-    QString query_text{"SELECT password FROM user_info "
-                       "WHERE login == '"+login+"';"};
-
-    if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query in user_login!";
-        //logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
-        //                            ,"user_login"
-        //                            ,"executing sql query fail: "+data_base_query->lastError().text());
-        emit login_not_exists_signal();
-        return;
-    }
-
-    QString tmp_pass;
-    while(data_base_query->next()){
-        tmp_pass = data_base_query->value(0).toString();
-    }
-
-    if(tmp_pass.isEmpty()){
-        emit login_not_exists_signal();
-        return;
-    }
-
-    if(password!=tmp_pass){
-        emit login_incorrect_pass_signal();
-        return;
-    }
-
-    emit login_success_signal();
+void sql_engine::become_logger_message_slot(TypeError type,const QString &where
+                                            ,const QString &function,const QString& what){
+    emit logger_signal(type,where,function,what);
 }
 
-void sql_engine::find_users(const QString &login,const QString& part_of_login){
-    change_connection_to_user_info();
-
-    QString query_text{"SELECT login FROM user_info "
-                       " WHERE login LIKE '"+part_of_login+"%' AND login != '"+login+"' ;"};
-
-    if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query in find_users!";
-        //logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
-        //                            ,"find_users"
-        //                            ,"executing sql query fail: "+data_base_query->lastError().text());
-        emit users_not_found_signal();
-        return;
-    }
-
-    std::vector<QString>users_vector;
-    while(data_base_query->next()){
-        users_vector.push_back(data_base_query->value(0).toString());
-    }
-
-    if(users_vector.empty()){
-        emit users_not_found_signal();
-        return;
-    }
-    emit list_of_logins_signal(std::move(users_vector));
-}
-
-void sql_engine::become_message_history(const QString &login_first,const QString &login_second,const QString &date){
-    change_connection_to_messages();
-
-    QString query_text{"SELECT sender, date_time, message FROM messages "
-                       "WHERE ((sender = '"+login_first+"' AND getter = '"+login_second+"' ) "
-                       "OR    (sender = '"+login_second+"' AND getter = '"+login_first+"' )) "
-                       "AND date_time < '"+date+"' "
-                       "ORDER BY date_time DESC ;"};
-
-    if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query in becoming message story!";
-        //logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
-         //                           ,"become_message_history"
-         //                           ,"executing sql query fail: "+data_base_query->lastError().text());
-        return;
-    }
-
-    std::vector<std::tuple<QString,QString,QString>>data_from_sql;
-
-    unsigned int count{0};
-
-    while(data_base_query->next()&&count<20){
-        data_from_sql.push_back(std::make_tuple(data_base_query->value(0).toString(),
-                                                data_base_query->value(1).toString(),
-                                                data_base_query->value(2).toString()));
-        count+=1;
-    }
-
-    if(data_from_sql.empty()){
-        return;
-    }
-
-    emit messeges_list_signal(std::move(data_from_sql));
-}
-
-void sql_engine::insert_message(const QString &login_from,
-                         const QString &login_to,const QString &message,const QString &datetime){
-    change_connection_to_messages();
-
-    QString query_text{"INSERT INTO messages ( sender , getter , date_time , message ) "
-                " VALUES ('"+login_from+"' , '"+login_to+"' , '"+datetime+"' , '"+message+"');"};
-
-    if(!data_base_query->exec(query_text)){
-        qDebug()<<"Fail by executing sql query in insert_message!";
-        //logger_api->message_handler(logger::TypeError::ERROR,"sql_engine"
-        //                            ,"insert_message"
-        //                            ,"executing sql query fail: "+data_base_query->lastError().text());
-        return;
-    }
+void sql_engine::become_result_and_send_slot(const Answer_to_thread& user_answer){
+    emit answer_request(std::move(user_answer));
 }

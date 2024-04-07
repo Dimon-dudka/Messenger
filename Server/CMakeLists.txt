@@ -25,6 +25,9 @@ set(HEADERS
         ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.h
         ${CMAKE_SOURCE_DIR}/logger/logger.h
         ${CMAKE_SOURCE_DIR}/thread_sheduler/thread_sheduler.h
+        ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads/user_info_thread/user_info_thread.h
+        ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads/messages_info_thread/messages_info_thread.h
+        ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads/request_types.h
 )
 
 set(SOURCES
@@ -33,16 +36,20 @@ set(SOURCES
         ${CMAKE_SOURCE_DIR}/sql_engine/sql_engine.cpp
         ${CMAKE_SOURCE_DIR}/logger/logger.cpp
         ${CMAKE_SOURCE_DIR}/thread_sheduler/thread_sheduler.cpp
+        ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads/user_info_thread/user_info_thread.cpp
+        ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads/messages_info_thread/messages_info_thread.cpp
 )
 
 add_executable(Server ${SOURCES} ${HEADERS}
     ${CMAKE_SOURCE_DIR}/resources/server_structure.qmodel
-    thread_sheduler/thread_sheduler.h thread_sheduler/thread_sheduler.cpp
 )
 
 target_include_directories(Server
     PUBLIC ${CMAKE_SOURCE_DIR}/main_server
     PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine
+    PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads
+    PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads/messages_info_thread
+    PUBLIC ${CMAKE_SOURCE_DIR}/sql_engine/sql_threads/user_info_thread
     PUBLIC ${CMAKE_SOURCE_DIR}/logger
     PUBLIC ${CMAKE_SOURCE_DIR}/resources
     PUBLIC ${CMAKE_SOURCE_DIR}/thread_sheduler
