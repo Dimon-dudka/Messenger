@@ -20,7 +20,7 @@ private:
     QString last_data_message;
 
     QPointer <QLabel> talker_login_label;
-    QPointer <QPushButton> send_button,another_user_button,settings_button;
+    QPointer <QPushButton> send_button,another_user_button;
     QPointer <QLineEdit> message_line_edit;
     QPointer <QTextBrowser> messages_text_browser;
     QPointer <QGridLayout> widget_layout;

@@ -8,6 +8,7 @@
 //  v 0.1 - 10.01.2024 Added register/login, choise an interlocutor, general error menu
 //  v 0.9 - 11.02.2024 Implemented main logic and basic functions
 //  v 1.0 - 12.02.2024 Realese version
+//  v 1.1 - 08.04.2024 Multithreading server
 //--------------------------------------------------------------------------------------------
 
 #include "widget_manager.h"

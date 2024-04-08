@@ -1,3 +1,5 @@
+//  An instance of the user request handler in a separate thread
+
 #pragma once
 
 #include <QTcpSocket>

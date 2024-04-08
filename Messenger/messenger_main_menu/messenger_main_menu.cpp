@@ -8,7 +8,6 @@ messenger_main_menu::messenger_main_menu(QWidget *parrent):QWidget(parrent)
 
     send_button = new QPushButton("Send");
     another_user_button = new QPushButton("Find another user");
-    settings_button = new QPushButton("Settings");
 
     message_line_edit = new QLineEdit;
 
