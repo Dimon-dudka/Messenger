@@ -17,9 +17,9 @@ void user_info_thread::open_data_base(){
     if(!sql_connection.open()){
         qDebug()<<"User info DB connection FAIL!";
 
-        emit logger_signal(TypeError::FATAL,"<user_info_thread>"
+        emit logger_signal({TypeError::FATAL,"<user_info_thread>"
                             ,"open_data_base"
-                            ,"unable to open user_info database!");
+                            ,"unable to open user_info database!"});
 
         emit stop_server_signal();
         emit finished();
@@ -36,16 +36,16 @@ void user_info_thread::open_data_base(){
     if(!data_base_query->exec(query_text)){
         qDebug()<<"User info DB open FAIL!";
 
-        emit logger_signal(TypeError::FATAL,"<user_info_thread>"
+        emit logger_signal({TypeError::FATAL,"<user_info_thread>"
             ,"open_data_base"
-            ,"unable to create user_info database: "+data_base_query->lastError().text());
+            ,"unable to create user_info database: "+data_base_query->lastError().text()});
 
         emit stop_server_signal();
         emit finished();
         return;
     }
-    emit logger_signal(TypeError::INFO,"<user_info_thread>","open_data_bases",
-                       "user_info.sqlite is open");
+    emit logger_signal({TypeError::INFO,"<user_info_thread>","open_data_bases",
+                        "user_info.sqlite is open"});
 }
 
 void user_info_thread::work_slot(){
@@ -76,9 +76,8 @@ void user_info_thread::work_slot(){
         requests_queue.pop_front();
     }
 
-    emit logger_signal(TypeError::INFO,"<user_info_thread>"
-                       ,"work_slot"
-                       ,"Completion of the thread execution");
+    emit logger_signal({TypeError::INFO,"<user_info_thread>"
+                       ,"work_slot","Completion of the thread execution"});
 
     emit finished();
 
@@ -89,12 +88,10 @@ void user_info_thread::user_registration(const Request_struct& user_request){
                        "VALUES ( '"+user_request.values.at(0)+"', '"+user_request.values.at(1)+"' );"};
 
     if(!data_base_query->exec(query_text)){
-        //emit user_already_exists_signal(user_request.thread_id);
         emit answer_request({user_request.thread_id,SQL_STATE::REGISTRATION_FAIL,{},{}});
         return;
     }
 
-    //emit registration_success_signal(user_request.thread_id);
     emit answer_request({user_request.thread_id,SQL_STATE::REGISTRATION_SUCCESS,{},{}});
 }
 
@@ -105,16 +102,12 @@ void user_info_thread::user_login(const Request_struct& user_request){
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query in user_login!";
 
-        emit logger_signal(TypeError::ERROR,"<user_info_thread>"
-                           ,"user_login"
-                           ,"executing sql query fail: "+data_base_query->lastError().text());
+        emit logger_signal({TypeError::ERROR,"<user_info_thread>"
+                ,"user_login","executing sql query fail: "+data_base_query->lastError().text()});
 
-        //emit login_not_exists_signal(user_request.thread_id);
         emit answer_request({user_request.thread_id,SQL_STATE::LOGIN_FAIL_LOGIN,{},{}});
         return;
     }
-
-    qDebug()<<"Executing of query ok";
 
     QString tmp_pass;
     while(data_base_query->next()){
@@ -122,21 +115,15 @@ void user_info_thread::user_login(const Request_struct& user_request){
     }
 
     if(tmp_pass.isEmpty()){
-        //emit login_not_exists_signal(user_request.thread_id);
-        qDebug()<<"Empty";
         emit answer_request({user_request.thread_id,SQL_STATE::LOGIN_FAIL_LOGIN,{},{}});
         return;
     }
 
     if(user_request.values.at(1)!=tmp_pass){
-        //emit login_incorrect_pass_signal(user_request.thread_id);
-        qDebug()<<"Inc pass";
         emit answer_request({user_request.thread_id,SQL_STATE::LOGIN_FAIL_PASSWORD,{},{}});
         return;
     }
 
-    qDebug()<<"Sending ok";
-    //emit login_success_signal(user_request.thread_id);
     emit answer_request({user_request.thread_id,SQL_STATE::LOGIN_SUCCESS,{},{}});
 }
 
@@ -147,12 +134,9 @@ void user_info_thread::find_users(const Request_struct& user_request){
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query in find_users!";
 
-        emit logger_signal(TypeError::ERROR,"<user_info_thread>"
-                           ,"find_users"
-                           ,"executing sql query fail: "+data_base_query->lastError().text());
+        emit logger_signal({TypeError::ERROR,"<user_info_thread>"
+                ,"find_users","executing sql query fail: "+data_base_query->lastError().text()});
 
-
-        //emit users_not_found_signal(user_request.thread_id);
         emit answer_request({user_request.thread_id,SQL_STATE::USERS_NOT_FOUND,{},{}});
         return;
     }
@@ -163,26 +147,23 @@ void user_info_thread::find_users(const Request_struct& user_request){
     }
 
     if(users_vector.empty()){
-        //emit users_not_found_signal(user_request.thread_id);
         emit answer_request({user_request.thread_id,SQL_STATE::USERS_NOT_FOUND,{},{}});
         return;
     }
-    //emit list_of_logins_signal(user_request.thread_id,std::move(users_vector));
     emit answer_request({user_request.thread_id,SQL_STATE::USERS_FOUND_SUCCESS,
                          std::move(users_vector),{}});
 }
 
 void user_info_thread::stop_work()noexcept{
-    emit logger_signal(TypeError::INFO,"<user_info_thread>","stop_work",
-                       "Stoped work of request answering cycle");
+    emit logger_signal({TypeError::INFO,"<user_info_thread>","stop_work",
+                        "Stoped work of request answering cycle"});
     flag_of_work = false;
 }
 
 void user_info_thread::add_to_queue_slot(const Request_struct& user_request){
     if(user_request.values.empty()){
-        emit logger_signal(TypeError::INFO,"<user_info_thread>"
-                           ,"add_to_queue_slot"
-                           ,"Empty incoming data");
+        emit logger_signal({TypeError::INFO,"<user_info_thread>"
+                            ,"add_to_queue_slot", "Empty incoming data"});
         return;
     }
     requests_queue.push_back(user_request);

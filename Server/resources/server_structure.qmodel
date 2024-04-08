@@ -69,7 +69,7 @@
                          </base-DElement>
                          <object>{28a7c12b-9b11-4725-87e8-6390e3cb3929}</object>
                          <name>main_server</name>
-                         <pos>x:230;y:80</pos>
+                         <pos>x:215;y:80</pos>
                          <rect>x:-50;y:-35;w:100;h:70</rect>
                          <visual-role>0</visual-role>
                         </DObject>
@@ -130,24 +130,7 @@
                          <b>{dc6b1360-da75-4b85-8cf3-dd601e9c92c8}</b>
                         </DRelation>
                        </base-DRelation>
-                      </DDependency>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DDependency">
-                      <DDependency>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{5e0009b9-574b-4725-8b78-71dfe41420ba}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{05b2bf4b-4699-4b9a-89e3-5e02c300ef08}</object>
-                         <a>{dc6b1360-da75-4b85-8cf3-dd601e9c92c8}</a>
-                         <b>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</b>
-                        </DRelation>
-                       </base-DRelation>
+                       <direction>2</direction>
                       </DDependency>
                      </instance>
                     </item>
@@ -168,7 +151,7 @@
                           </qlist>
                          </stereotypes>
                          <name>user_info</name>
-                         <pos>x:345;y:180</pos>
+                         <pos>x:485;y:315</pos>
                          <rect>x:-20;y:-20;w:40;h:40</rect>
                          <visual-role>0</visual-role>
                         </DObject>
@@ -193,84 +176,12 @@
                           </qlist>
                          </stereotypes>
                          <name>messages_info</name>
-                         <pos>x:435;y:180</pos>
+                         <pos>x:275;y:315</pos>
                          <rect>x:-20;y:-20;w:40;h:40</rect>
                          <visual-role>0</visual-role>
                         </DObject>
                        </base-DObject>
                       </DComponent>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DDependency">
-                      <DDependency>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{a3ae03e9-6558-481a-9b12-132e2a8de522}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{e45b48bf-db34-41c8-95f0-03ff209782a7}</object>
-                         <a>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</a>
-                         <b>{5e6ee176-d6eb-4339-b678-c6995e993ba1}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DDependency>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DDependency">
-                      <DDependency>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{2c8f85c9-e4ce-4224-94f1-f799587f13fe}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{ffb84037-0f71-43d8-b041-f10bfe0e0607}</object>
-                         <a>{5e6ee176-d6eb-4339-b678-c6995e993ba1}</a>
-                         <b>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DDependency>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DDependency">
-                      <DDependency>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{fe0f6270-011c-4346-87fd-0eeba700751b}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{6a2dd509-d659-4ad1-8f13-26422602f4d5}</object>
-                         <a>{659c4502-b1ea-43f4-918d-e30b6cf402cf}</a>
-                         <b>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DDependency>
-                     </instance>
-                    </item>
-                    <item>
-                     <instance type="DDependency">
-                      <DDependency>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{7035191b-d39e-489c-beea-dd95d7a71b32}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{15c309fe-5d48-4ca4-bfb0-db2dca461d85}</object>
-                         <a>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</a>
-                         <b>{659c4502-b1ea-43f4-918d-e30b6cf402cf}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DDependency>
                      </instance>
                     </item>
                     <item>
@@ -285,7 +196,7 @@
                          </base-DElement>
                          <object>{5f601584-75a4-40b3-9d0c-3389c7929485}</object>
                          <name>Server_machine</name>
-                         <pos>x:230;y:-45</pos>
+                         <pos>x:50;y:-35</pos>
                          <rect>x:-40;y:-15;w:80;h:30</rect>
                          <visual-role>0</visual-role>
                         </DObject>
@@ -326,7 +237,7 @@
                          </base-DElement>
                          <object>{0206ba62-c3d2-49b6-a1e1-fa3eaa5dae34}</object>
                          <name>Messenger</name>
-                         <pos>x:230;y:-160</pos>
+                         <pos>x:50;y:-150</pos>
                          <rect>x:-35;y:-20;w:70;h:40</rect>
                          <visual-role>0</visual-role>
                         </DObject>
@@ -369,8 +280,8 @@
                         </DElement>
                        </base-DElement>
                        <text>Users with messenger client</text>
-                       <pos>x:230;y:-175</pos>
-                       <rect>x:-155;y:-55;w:310;h:110</rect>
+                       <pos>x:50;y:-160</pos>
+                       <rect>x:-130;y:-55;w:260;h:110</rect>
                       </DBoundary>
                      </instance>
                     </item>
@@ -386,7 +297,7 @@
                          </base-DElement>
                          <object>{1b52b86d-748d-4e8b-a19c-dd2391c760c4}</object>
                          <name>logger</name>
-                         <pos>x:230;y:170</pos>
+                         <pos>x:70;y:205</pos>
                          <rect>x:-35;y:-30;w:70;h:60</rect>
                          <auto-sized>false</auto-sized>
                          <visual-role>0</visual-role>
@@ -414,24 +325,6 @@
                      </instance>
                     </item>
                     <item>
-                     <instance type="DDependency">
-                      <DDependency>
-                       <base-DRelation>
-                        <DRelation>
-                         <base-DElement>
-                          <DElement>
-                           <uid>{181a8e1e-578c-40bd-bf82-5e48f7144e86}</uid>
-                          </DElement>
-                         </base-DElement>
-                         <object>{7698d826-ca1f-4ba4-895b-eb2a3869ae10}</object>
-                         <a>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</a>
-                         <b>{eae6594a-819c-48f3-a57d-823f1a2d279a}</b>
-                        </DRelation>
-                       </base-DRelation>
-                      </DDependency>
-                     </instance>
-                    </item>
-                    <item>
                      <instance type="DItem">
                       <DItem>
                        <base-DObject>
@@ -443,7 +336,7 @@
                          </base-DElement>
                          <object>{20dd8d67-4dbb-449b-ae75-78ff2104981d}</object>
                          <name>log_file.log</name>
-                         <pos>x:115;y:170</pos>
+                         <pos>x:-50;y:205</pos>
                          <rect>x:-20;y:-30;w:40;h:60</rect>
                          <visual-role>0</visual-role>
                         </DObject>
@@ -471,10 +364,236 @@
                       </DDependency>
                      </instance>
                     </item>
+                    <item>
+                     <instance type="DBoundary">
+                      <DBoundary>
+                       <base-DElement>
+                        <DElement>
+                         <uid>{1f14f286-2f16-4561-943b-811c1d5dd6dc}</uid>
+                        </DElement>
+                       </base-DElement>
+                       <text>Thread for the logger</text>
+                       <pos>x:65;y:195</pos>
+                       <rect>x:-60;y:-60;w:120;h:120</rect>
+                      </DBoundary>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DPackage">
+                      <DPackage>
+                       <base-DObject>
+                        <DObject>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{8f300e9a-89b4-49d9-b7ec-9016c3e000b1}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{55956df2-56c2-4127-b431-b9a6e1c7caa7}</object>
+                         <name>thread_sheduler</name>
+                         <pos>x:340;y:-75</pos>
+                         <rect>x:-55;y:-35;w:110;h:70</rect>
+                         <visual-role>0</visual-role>
+                        </DObject>
+                       </base-DObject>
+                      </DPackage>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{4bdf9914-9e63-4b7b-adc2-d137f7219a14}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{077ea902-97aa-4777-8e38-e3ef88bf0b04}</object>
+                         <a>{8f300e9a-89b4-49d9-b7ec-9016c3e000b1}</a>
+                         <b>{dc6b1360-da75-4b85-8cf3-dd601e9c92c8}</b>
+                        </DRelation>
+                       </base-DRelation>
+                       <direction>2</direction>
+                      </DDependency>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DBoundary">
+                      <DBoundary>
+                       <base-DElement>
+                        <DElement>
+                         <uid>{7033c954-cb40-481d-8e5d-696f5aa81296}</uid>
+                        </DElement>
+                       </base-DElement>
+                       <text>New thread for each new request</text>
+                       <pos>x:335;y:-80</pos>
+                       <rect>x:-90;y:-75;w:180;h:150</rect>
+                      </DBoundary>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DPackage">
+                      <DPackage>
+                       <base-DObject>
+                        <DObject>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{b429386f-3814-49eb-b2c7-5e33296664d6}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{07c658bd-2dad-4ef4-8e20-1205041dfdbc}</object>
+                         <name>messages_info_thread</name>
+                         <pos>x:275;y:205</pos>
+                         <rect>x:-70;y:-35;w:140;h:70</rect>
+                         <visual-role>0</visual-role>
+                        </DObject>
+                       </base-DObject>
+                      </DPackage>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{e995bf5e-0c22-4b00-874e-aef3ca68bdf1}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{2f703be2-aa79-4849-95e2-e7a374e15ea2}</object>
+                         <a>{b429386f-3814-49eb-b2c7-5e33296664d6}</a>
+                         <b>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</b>
+                        </DRelation>
+                       </base-DRelation>
+                       <direction>2</direction>
+                      </DDependency>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{71a8e14c-cbd4-464a-8e24-d776d682bcf4}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{71dd6de8-eb4e-4c37-8df9-6cc158fe1b79}</object>
+                         <a>{5e6ee176-d6eb-4339-b678-c6995e993ba1}</a>
+                         <b>{b429386f-3814-49eb-b2c7-5e33296664d6}</b>
+                        </DRelation>
+                       </base-DRelation>
+                       <direction>2</direction>
+                      </DDependency>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DPackage">
+                      <DPackage>
+                       <base-DObject>
+                        <DObject>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{2ba4b595-ff4f-4b54-a2a5-954000e50ca2}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{61fd4658-1c0c-40f7-8aab-3119a8ed1957}</object>
+                         <name>user_info_thread</name>
+                         <pos>x:480;y:200</pos>
+                         <rect>x:-60;y:-35;w:120;h:70</rect>
+                         <auto-sized>false</auto-sized>
+                         <visual-role>0</visual-role>
+                        </DObject>
+                       </base-DObject>
+                      </DPackage>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{32888ada-d87f-427e-8ff8-a57d6f32e371}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{fc9066ad-e292-456e-83b3-38f72dedf002}</object>
+                         <a>{2ba4b595-ff4f-4b54-a2a5-954000e50ca2}</a>
+                         <b>{2a61d5ac-a684-4fb6-9d86-ba03ee4e89e9}</b>
+                        </DRelation>
+                       </base-DRelation>
+                       <direction>2</direction>
+                      </DDependency>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DDependency">
+                      <DDependency>
+                       <base-DRelation>
+                        <DRelation>
+                         <base-DElement>
+                          <DElement>
+                           <uid>{f796e2b7-ead7-4e70-a59a-68821c59b7f9}</uid>
+                          </DElement>
+                         </base-DElement>
+                         <object>{1c3111a9-2157-46c1-aacf-3cfcf478d612}</object>
+                         <a>{659c4502-b1ea-43f4-918d-e30b6cf402cf}</a>
+                         <b>{2ba4b595-ff4f-4b54-a2a5-954000e50ca2}</b>
+                        </DRelation>
+                       </base-DRelation>
+                       <direction>2</direction>
+                      </DDependency>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DBoundary">
+                      <DBoundary>
+                       <base-DElement>
+                        <DElement>
+                         <uid>{4ce3811c-9ff7-4f07-8fbd-30ee5da366ba}</uid>
+                        </DElement>
+                       </base-DElement>
+                       <text>Thread for user_info requests</text>
+                       <pos>x:480;y:195</pos>
+                       <rect>x:-95;y:-65;w:190;h:130</rect>
+                      </DBoundary>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DBoundary">
+                      <DBoundary>
+                       <base-DElement>
+                        <DElement>
+                         <uid>{7c8586d1-b5d9-46df-9cb0-d207811191ab}</uid>
+                        </DElement>
+                       </base-DElement>
+                       <text>Thread for messages_info requests</text>
+                       <pos>x:270;y:195</pos>
+                       <rect>x:-95;y:-65;w:190;h:130</rect>
+                      </DBoundary>
+                     </instance>
+                    </item>
+                    <item>
+                     <instance type="DBoundary">
+                      <DBoundary>
+                       <base-DElement>
+                        <DElement>
+                         <uid>{322c3099-100f-46b5-b001-8dfcf6884bb8}</uid>
+                        </DElement>
+                       </base-DElement>
+                       <text>New thread for each new request</text>
+                       <pos>x:335;y:-80</pos>
+                       <rect>x:-90;y:-75;w:180;h:150</rect>
+                      </DBoundary>
+                     </instance>
+                    </item>
                    </qlist>
                   </elements>
-                  <last-modified>1707664958984</last-modified>
-                  <toolbarid>Deployment</toolbarid>
+                  <last-modified>1712519716497</last-modified>
+                  <toolbarid>General</toolbarid>
                  </MDiagram>
                 </base-MDiagram>
                </MCanvasDiagram>
@@ -618,6 +737,28 @@
                         </target>
                        </handle>
                       </item>
+                      <item>
+                       <handle>
+                        <uid>{9ec00fb9-5b23-4dc4-aef6-2994cc7128db}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{9ec00fb9-5b23-4dc4-aef6-2994cc7128db}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{28a7c12b-9b11-4725-87e8-6390e3cb3929}</a>
+                             <b>{55956df2-56c2-4127-b431-b9a6e1c7caa7}</b>
+                            </MRelation>
+                           </base-MRelation>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
                      </qlist>
                     </handles>
                    </handles>
@@ -664,6 +805,7 @@
                              <b>{28a7c12b-9b11-4725-87e8-6390e3cb3929}</b>
                             </MRelation>
                            </base-MRelation>
+                           <direction>2</direction>
                           </MDependency>
                          </instance>
                         </target>
@@ -791,6 +933,29 @@
                         </target>
                        </handle>
                       </item>
+                      <item>
+                       <handle>
+                        <uid>{1c3111a9-2157-46c1-aacf-3cfcf478d612}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{1c3111a9-2157-46c1-aacf-3cfcf478d612}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{6f4145d2-efba-43c2-bd23-85ebdbc9c2ad}</a>
+                             <b>{61fd4658-1c0c-40f7-8aab-3119a8ed1957}</b>
+                            </MRelation>
+                           </base-MRelation>
+                           <direction>2</direction>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
                      </qlist>
                     </handles>
                    </handles>
@@ -842,6 +1007,29 @@
                              <b>{66b9c031-7eaf-4fdd-94d2-8f1b36ecaa1d}</b>
                             </MRelation>
                            </base-MRelation>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
+                      <item>
+                       <handle>
+                        <uid>{71dd6de8-eb4e-4c37-8df9-6cc158fe1b79}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{71dd6de8-eb4e-4c37-8df9-6cc158fe1b79}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{d3366f29-4927-4c67-abf6-0e1d8dac794d}</a>
+                             <b>{07c658bd-2dad-4ef4-8e20-1205041dfdbc}</b>
+                            </MRelation>
+                           </base-MRelation>
+                           <direction>2</direction>
                           </MDependency>
                          </instance>
                         </target>
@@ -1251,6 +1439,162 @@
                 <variety-editable>false</variety-editable>
                 <variety>document</variety>
                </MItem>
+              </instance>
+             </target>
+            </handle>
+           </item>
+           <item>
+            <handle>
+             <uid>{55956df2-56c2-4127-b431-b9a6e1c7caa7}</uid>
+             <target>
+              <instance type="MPackage">
+               <MPackage>
+                <base-MObject>
+                 <MObject>
+                  <base-MElement>
+                   <MElement>
+                    <uid>{55956df2-56c2-4127-b431-b9a6e1c7caa7}</uid>
+                   </MElement>
+                  </base-MElement>
+                  <name>thread_sheduler</name>
+                  <relations>
+                   <handles>
+                    <handles>
+                     <qlist>
+                      <item>
+                       <handle>
+                        <uid>{077ea902-97aa-4777-8e38-e3ef88bf0b04}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{077ea902-97aa-4777-8e38-e3ef88bf0b04}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{55956df2-56c2-4127-b431-b9a6e1c7caa7}</a>
+                             <b>{28a7c12b-9b11-4725-87e8-6390e3cb3929}</b>
+                            </MRelation>
+                           </base-MRelation>
+                           <direction>2</direction>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
+                     </qlist>
+                    </handles>
+                   </handles>
+                  </relations>
+                 </MObject>
+                </base-MObject>
+               </MPackage>
+              </instance>
+             </target>
+            </handle>
+           </item>
+           <item>
+            <handle>
+             <uid>{07c658bd-2dad-4ef4-8e20-1205041dfdbc}</uid>
+             <target>
+              <instance type="MPackage">
+               <MPackage>
+                <base-MObject>
+                 <MObject>
+                  <base-MElement>
+                   <MElement>
+                    <uid>{07c658bd-2dad-4ef4-8e20-1205041dfdbc}</uid>
+                   </MElement>
+                  </base-MElement>
+                  <name>messages_info_thread</name>
+                  <relations>
+                   <handles>
+                    <handles>
+                     <qlist>
+                      <item>
+                       <handle>
+                        <uid>{2f703be2-aa79-4849-95e2-e7a374e15ea2}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{2f703be2-aa79-4849-95e2-e7a374e15ea2}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{07c658bd-2dad-4ef4-8e20-1205041dfdbc}</a>
+                             <b>{66b9c031-7eaf-4fdd-94d2-8f1b36ecaa1d}</b>
+                            </MRelation>
+                           </base-MRelation>
+                           <direction>2</direction>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
+                     </qlist>
+                    </handles>
+                   </handles>
+                  </relations>
+                 </MObject>
+                </base-MObject>
+               </MPackage>
+              </instance>
+             </target>
+            </handle>
+           </item>
+           <item>
+            <handle>
+             <uid>{61fd4658-1c0c-40f7-8aab-3119a8ed1957}</uid>
+             <target>
+              <instance type="MPackage">
+               <MPackage>
+                <base-MObject>
+                 <MObject>
+                  <base-MElement>
+                   <MElement>
+                    <uid>{61fd4658-1c0c-40f7-8aab-3119a8ed1957}</uid>
+                   </MElement>
+                  </base-MElement>
+                  <name>user_info_thread</name>
+                  <relations>
+                   <handles>
+                    <handles>
+                     <qlist>
+                      <item>
+                       <handle>
+                        <uid>{fc9066ad-e292-456e-83b3-38f72dedf002}</uid>
+                        <target>
+                         <instance type="MDependency">
+                          <MDependency>
+                           <base-MRelation>
+                            <MRelation>
+                             <base-MElement>
+                              <MElement>
+                               <uid>{fc9066ad-e292-456e-83b3-38f72dedf002}</uid>
+                              </MElement>
+                             </base-MElement>
+                             <a>{61fd4658-1c0c-40f7-8aab-3119a8ed1957}</a>
+                             <b>{66b9c031-7eaf-4fdd-94d2-8f1b36ecaa1d}</b>
+                            </MRelation>
+                           </base-MRelation>
+                           <direction>2</direction>
+                          </MDependency>
+                         </instance>
+                        </target>
+                       </handle>
+                      </item>
+                     </qlist>
+                    </handles>
+                   </handles>
+                  </relations>
+                 </MObject>
+                </base-MObject>
+               </MPackage>
               </instance>
              </target>
             </handle>

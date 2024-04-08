@@ -19,7 +19,6 @@
 
 #include "sql_engine.h"
 #include "logger.h"
-
 #include "thread_sheduler.h"
 
 class main_server : public QObject
@@ -47,12 +46,15 @@ private slots:
 
     void socket_disconnect_slot();
 
+    void become_table_insert_slot(QString login,quintptr desc);
+
     //  Answer on thread signals
     void send_answer_slot(const quintptr &user_desc,const QByteArray &user_answer);
-    //void write_into_logger_slot(const TypeError& error_type,
-    //                            const QString &file,const QString &ffunction_fail,const QString &what);
 
 public:
     explicit main_server(QObject * parent = 0);
     ~main_server() = default;
+
+signals:
+    void stop_threads();
 };

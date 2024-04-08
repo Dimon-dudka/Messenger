@@ -27,12 +27,11 @@ public slots:
 
 private slots:
     void become_result_and_send_slot(const Answer_to_thread& user_answer);
-    void become_logger_message_slot(TypeError type,const QString &where
-                                    ,const QString &function,const QString& what);
+    void become_logger_message_slot(const Logger_message& message);
     void stop_server_slot();
 
 signals:
     void answer_request(Answer_to_thread);
-    void logger_signal(TypeError,QString,QString,QString);
+    void logger_signal(Logger_message);
     void stop_server_signal();
 };

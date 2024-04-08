@@ -1,17 +1,13 @@
 #include "thread_sheduler.h"
 
 thread_sheduler::thread_sheduler(quintptr user_socket, const QByteArray& data,
-        QHash<QString,quintptr> login_and_socket_table_from,
-        QMap<quintptr,QString>socket_and_login_table_from) : thread_user_socket_desc(user_socket),
-        login_and_socket_table(login_and_socket_table_from),socket_and_login_table(socket_and_login_table_from),
-        user_request(std::move(data))
+        QHash<QString,quintptr> login_and_socket_table_from) : thread_user_socket_desc(user_socket),
+        login_and_socket_table(login_and_socket_table_from), user_request(std::move(data))
 {
     sql_answer = SQL_STATE::NONE;
 }
 
 void thread_sheduler::read_from_socket(){
-
-    qDebug()<<"Fork thread: "<<QThread::currentThreadId();
 
     QJsonDocument user_data {QJsonDocument::fromJson(user_request)};
     QJsonObject user_json_object{user_data.object()};
@@ -53,8 +49,8 @@ void thread_sheduler::read_from_socket(){
     }else{
         qDebug()<<"empty data";
 
-        emit logger_signal(TypeError::WARNING,"<thread_sheduler>",
-                           "read_from_socket","another type of JSON: "+user_json_object["type"].toString());
+        emit logger_signal({TypeError::WARNING,"<thread_sheduler>",
+            "read_from_socket","another type of JSON: "+user_json_object["type"].toString()});
     }
 }
 
@@ -113,6 +109,13 @@ void thread_sheduler::request_answer_slot(const Answer_to_thread& request){
     emit finished();
 }
 
+void thread_sheduler::stop_thread(){
+    emit logger_signal({TypeError::WARNING,"<thread_sheduler>"
+        ,"stop_thread()","Force stop of thread"});
+
+    emit finished();
+}
+
 void thread_sheduler::send_message_history_slot(){
     QJsonObject answer_to_client,answer_data;
     QJsonArray data_array;
@@ -144,8 +147,8 @@ void thread_sheduler::become_message_history_slot(const QVector<Message_from_DB>
     if(message_story.empty()){
         message_story = std::move(data);
     }else{
-        emit logger_signal(TypeError::WARNING,"<thread_sheduler>",
-                           "become_message_history_slot","message_story is not empty");
+        emit logger_signal({TypeError::WARNING,"<thread_sheduler>",
+                            "become_message_history_slot","message_story is not empty"});
     }
 }
 
@@ -163,8 +166,9 @@ void thread_sheduler::send_message_slot(const QString &login_from,const QString 
     QJsonDocument doc(message_to_client);
     QByteArray json_byte_array = doc.toJson();
 
-    emit answer_signal(std::move(thread_user_socket_desc),std::move(json_byte_array));
+    emit answer_signal(login_and_socket_table[message_data["login_to"].toString()],std::move(json_byte_array));
 }
+
 void thread_sheduler::registration_answer_slot(const QString& login){
     QJsonObject answer_to_client,answer_data;
 
@@ -175,11 +179,10 @@ void thread_sheduler::registration_answer_slot(const QString& login){
         answer_data["answer"]="success";
         answer_data["problem"]="none";
 
-        login_and_socket_table[login]=thread_user_socket_desc;
-        socket_and_login_table[thread_user_socket_desc]=login;
+        emit insert_login_desc_signal(login,thread_user_socket_desc);
 
-        emit logger_signal(TypeError::INFO,"<thread_sheduler>",
-                           "registration_answer_slot","register OK: "+login);
+        emit logger_signal({TypeError::INFO,"<thread_sheduler>",
+                            "registration_answer_slot","register OK: "+login});
 
         break;
     case SQL_STATE::REGISTRATION_FAIL:
@@ -214,11 +217,10 @@ void thread_sheduler::login_answer_slot(const QString& login){
         answer_data["answer"]="success";
         answer_data["problem"]="none";
 
-        emit logger_signal(TypeError::INFO,"<thread_sheduler>",
-                           "login_answer_slot","login OK: "+login);
+        emit logger_signal({TypeError::INFO,"<thread_sheduler>",
+                            "login_answer_slot","login OK: "+login});
 
-        login_and_socket_table[login]=thread_user_socket_desc;
-        socket_and_login_table[thread_user_socket_desc]=login;
+        emit insert_login_desc_signal(login,thread_user_socket_desc);
 
         break;
     }
@@ -236,8 +238,8 @@ void thread_sheduler::become_users_list_answer_slot(const QVector<QString>logins
     if(list_of_users.empty()){
         list_of_users=std::move(logins_list);
     }else{
-        emit logger_signal(TypeError::WARNING,"<thread_sheduler>",
-                           "become_users_list_answer_slot","list_of_users is not empty");
+        emit logger_signal({TypeError::WARNING,"<thread_sheduler>",
+                            "become_users_list_answer_slot","list_of_users is not empty"});
     }
 }
 

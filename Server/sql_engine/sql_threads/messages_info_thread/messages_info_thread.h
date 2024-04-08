@@ -1,3 +1,6 @@
+//  Class provides the sql connection to messages_info table
+//  Contains basic queue of thread requests
+
 #pragma once
 
 #include <QtSql>
@@ -41,15 +44,7 @@ public:
 
 signals:
 
-    void logger_signal(TypeError,QString,QString,QString);
-
-    //  become messeges list signals
-    //void messeges_list_signal(Qt::HANDLE,QVector<Message_from_DB>);
-    //void messages_list_fail_signal(Qt::HANDLE);
-
-    //  Message insert signals
-    //void message_insert_success_signal(Qt::HANDLE);
-    //void message_insert_fail_signal(Qt::HANDLE);
+    void logger_signal(Logger_message);
 
     void answer_request(Answer_to_thread);
 

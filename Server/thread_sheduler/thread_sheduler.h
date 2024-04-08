@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QTcpSocket>
-#include <QMutex>
 #include <QHash>
 #include <QMap>
 #include <QPointer>
@@ -27,7 +26,6 @@ private:
     QByteArray user_request;
 
     QHash<QString,quintptr> login_and_socket_table;
-    QMap<quintptr,QString> socket_and_login_table;
 
     QVector<QString> list_of_users;
     QVector<Message_from_DB>message_story;
@@ -52,25 +50,24 @@ public slots:
     void read_from_socket();
 
     //  SQL slots
-
     void request_answer_slot(const Answer_to_thread& request);
-
     void become_users_list_answer_slot(const QVector<QString>logins_list);
-
     void become_message_history_slot(const QVector<Message_from_DB>& data);
+
+    void stop_thread();
 
 public:
     thread_sheduler(quintptr user_socket, const QByteArray& data,
-                    QHash<QString,quintptr> login_and_socket_table_from,
-                    QMap<quintptr,QString>socket_and_login_table_from);
-
-    QMutex g_mutex;
+                    QHash<QString,quintptr> login_and_socket_table_from);
 
 signals:
 
     void finished();
     void answer_signal(quintptr,QByteArray);
-    void logger_signal(TypeError,QString,QString,QString);
+    void logger_signal(Logger_message);
+
+    //  Tables insert signal
+    void insert_login_desc_signal(QString,quintptr);
 
     //  Signal to sql_engine
     void request_to_sql_signal(Request_struct);

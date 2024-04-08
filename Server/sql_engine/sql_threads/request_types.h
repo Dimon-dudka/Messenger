@@ -1,8 +1,11 @@
+//  Header file with all request types
+
 #pragma once
 
 #include <QString>
 #include <QVector>
 
+//  Request to sql_engine
 enum class REQUEST_TYPES{
     REGISTER,
     LOGIN,
@@ -11,6 +14,7 @@ enum class REQUEST_TYPES{
     MESSAGE_HISTORY,
 };
 
+//  Types for logger
 enum class TypeError{
     INFO,
     WARNING,
@@ -18,6 +22,7 @@ enum class TypeError{
     FATAL,
 };
 
+//  From sql_engine answer types
 enum class SQL_STATE{
     NONE,
     REGISTRATION_SUCCESS,
@@ -33,6 +38,7 @@ enum class SQL_STATE{
     CHAT_HISTORY_FAIL,
 };
 
+//  Request structure to sql_engine
 struct Request_struct{
 
     REQUEST_TYPES type;
@@ -45,6 +51,7 @@ struct Request_struct{
         :type(type_from_user),thread_id(id),values(arg){}
 };
 
+//  Structure that provides message structure to message_history request
 struct Message_from_DB{
     QString sender,datetime,message;
 
@@ -52,8 +59,8 @@ struct Message_from_DB{
         sender(sender_from),datetime(datetime_from),message(message_from){}
 };
 
+//  Standart answer type from sql_engine to thread
 struct Answer_to_thread{
-
     Qt::HANDLE thread_id;
 
     SQL_STATE sql_answer;
@@ -67,4 +74,14 @@ struct Answer_to_thread{
         thread_id(thread_id_from),sql_answer(sql_answer_from)
         ,logins_list(logins_list_from),message_history(message_history_from){}
 
+};
+
+struct Logger_message{
+    TypeError type;
+
+    QString file, whereAccident, message;
+
+    Logger_message(TypeError type_from,const QString &file_from,
+                   const QString &whereAccident_from,const QString &message_from):
+        type(type_from),file(file_from),whereAccident(whereAccident_from),message(message_from){}
 };

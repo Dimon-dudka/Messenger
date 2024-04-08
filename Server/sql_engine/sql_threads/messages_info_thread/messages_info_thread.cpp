@@ -17,8 +17,8 @@ void messages_info_thread::open_data_base(){
     if(!sql_connection.open()){
         qDebug()<<"User messages DB connection FAIL!";
 
-        emit logger_signal(TypeError::FATAL,"<messages_info_thread>","open_data_bases",
-                           "unable to open messages_info database!");
+        emit logger_signal({TypeError::FATAL,"<messages_info_thread>","open_data_bases",
+                            "unable to open messages_info database!"});
         emit stop_server_signal();
         emit finished();
         return;
@@ -37,14 +37,14 @@ void messages_info_thread::open_data_base(){
     if(!data_base_query->exec(query_text)){
         qDebug()<<"User messages DB open FAIL!";
 
-        emit logger_signal(TypeError::FATAL,"<messages_info_thread>","open_data_bases",
-                           "unable to create messages database: "+data_base_query->lastError().text());
+        emit logger_signal({TypeError::FATAL,"<messages_info_thread>","open_data_bases",
+                            "unable to create messages database: "+data_base_query->lastError().text()});
         emit stop_server_signal();
         emit finished();
         return;
     }
-    emit logger_signal(TypeError::INFO,"<messages_info_thread>","open_data_bases",
-                       "messages_info.sqlite is open");
+    emit logger_signal({TypeError::INFO,"<messages_info_thread>","open_data_bases",
+                        "messages_info.sqlite is open"});
 }
 
 void messages_info_thread::work_slot(){
@@ -71,9 +71,9 @@ void messages_info_thread::work_slot(){
         requests_queue.pop_front();
     }
 
-    emit logger_signal(TypeError::INFO,"<messages_info_thread>"
+    emit logger_signal({TypeError::INFO,"<messages_info_thread>"
                        ,"work_slot"
-                       ,"Completion of the thread execution");
+                        ,"Completion of the thread execution"});
 
     emit finished();
 }
@@ -88,10 +88,9 @@ void messages_info_thread::become_message_history(const Request_struct& user_req
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query in becoming message story!";
 
-        //emit messages_list_fail_signal(user_request.thread_id);
         emit answer_request({user_request.thread_id,SQL_STATE::CHAT_HISTORY_FAIL,{},{}});
-        emit logger_signal(TypeError::ERROR,"<messages_info_thread>","become_message_history",
-                        "executing sql query fail: "+data_base_query->lastError().text());
+        emit logger_signal({TypeError::ERROR,"<messages_info_thread>","become_message_history",
+                            "executing sql query fail: "+data_base_query->lastError().text()});
         return;
     }
 
@@ -106,11 +105,10 @@ void messages_info_thread::become_message_history(const Request_struct& user_req
         count+=1;
     }
 
-    if(data_from_sql.empty()){
-        return;
-    }
+    //if(data_from_sql.empty()){
+    //    return;
+    //}
 
-    //emit messeges_list_signal(user_request.thread_id,std::move(data_from_sql));
     emit answer_request({user_request.thread_id,SQL_STATE::CHAT_HISTORY_SUCCESS,
                          {},std::move(data_from_sql)});
 }
@@ -122,30 +120,27 @@ void messages_info_thread::insert_message(const Request_struct& user_request){
 
     if(!data_base_query->exec(query_text)){
         qDebug()<<"Fail by executing sql query in insert_message!";
-        //emit message_insert_fail_signal(user_request.thread_id);
 
         emit answer_request({user_request.thread_id,SQL_STATE::MESSAGE_NOT_INSERTED,{},{}});
 
-        emit logger_signal(TypeError::ERROR,"<messages_info_thread>","insert_message",
-                           "executing sql query fail: "+data_base_query->lastError().text());
+        emit logger_signal({TypeError::ERROR,"<messages_info_thread>","insert_message",
+                            "executing sql query fail: "+data_base_query->lastError().text()});
         return;
     }
 
-    //emit message_insert_success_signal(user_request.thread_id);
     emit answer_request({user_request.thread_id,SQL_STATE::MESSAGE_INSERTED,{},{}});
 }
 
 void messages_info_thread::stop_work()noexcept{
-    emit logger_signal(TypeError::INFO,"<messages_info_thread>","stop_work",
-                       "Stoped work of request answering cycle");
+    emit logger_signal({TypeError::INFO,"<messages_info_thread>","stop_work",
+                        "Stoped work of request answering cycle"});
     flag_of_work = false;
 }
 
 void messages_info_thread::add_to_queue_slot(const Request_struct& user_request){
     if(user_request.values.empty()){
-        emit logger_signal(TypeError::INFO,"<messages_info_thread>"
-                           ,"add_to_queue_slot"
-                           ,"Empty incoming data");
+        emit logger_signal({TypeError::INFO,"<messages_info_thread>"
+                           ,"add_to_queue_slot","Empty incoming data"});
         return;
     }
     requests_queue.push_back(user_request);

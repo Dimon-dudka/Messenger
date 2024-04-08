@@ -1,3 +1,6 @@
+//  Class provides the sql connection to user_info table
+//  Contains basic queue of thread requests
+
 #pragma once
 
 #include <QtSql>
@@ -41,7 +44,7 @@ public:
 
 signals:
 
-    void logger_signal(TypeError,QString,QString,QString);
+    void logger_signal(Logger_message);
 
     void answer_request(Answer_to_thread);
 

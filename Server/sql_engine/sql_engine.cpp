@@ -1,4 +1,3 @@
-
 #include "sql_engine.h"
 
 sql_engine::sql_engine(QObject *parrent):QObject(parrent)
@@ -58,9 +57,8 @@ void sql_engine::stop_server_slot(){
     emit stop_server_signal();
 }
 
-void sql_engine::become_logger_message_slot(TypeError type,const QString &where
-                                            ,const QString &function,const QString& what){
-    emit logger_signal(type,where,function,what);
+void sql_engine::become_logger_message_slot(const Logger_message& message){
+    emit logger_signal(std::move(message));
 }
 
 void sql_engine::become_result_and_send_slot(const Answer_to_thread& user_answer){

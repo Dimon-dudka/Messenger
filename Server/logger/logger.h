@@ -5,28 +5,29 @@
 
 #include <QFile>
 #include <QDir>
+#include <QThread>
+#include <QQueue>
 #include <QTextStream>
 #include <QDateTime>
 #include <QCoreApplication>
 #include <QString>
 #include <QPointer>
 
+#include "request_types.h"
+
 class logger:public QObject
 {
     Q_OBJECT
 private:
 
+    bool flag_of_work;
+
+    QQueue<Logger_message> messages_queue;
+
     QPointer<QFile>log_file;
     QString direction;
 
 public:
-
-    enum class TypeError{
-        INFO,
-        WARNING,
-        ERROR,
-        FATAL,
-    };
 
     logger(QObject * parrent = 0);
 
@@ -34,7 +35,14 @@ public:
 
 public slots:
 
-    void message_handler(TypeError type,const QString &file,const QString &whereAccident,const QString &message);
+    void message_handler(const Logger_message& message);
+
+    void stop_work()noexcept;
+    void work();
+
+signals:
+
+    void finished();
 
 };
 
